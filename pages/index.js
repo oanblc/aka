@@ -115,7 +115,7 @@ export default function Home() {
     const interval = setInterval(loadAlarmCount, 5000);
     
     // Logo'yu yükle
-    fetch('http://localhost:5000/api/settings')
+    fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000')+'/api/settings')
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -127,7 +127,7 @@ export default function Home() {
       .catch(err => console.error('Logo yükleme hatası:', err));
 
     // Family Cards'ı yükle
-    fetch('http://localhost:5000/api/family-cards')
+    fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000')+'/api/family-cards')
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -137,7 +137,7 @@ export default function Home() {
       .catch(err => console.error('Family cards yükleme hatası:', err));
 
     // Articles'ı yükle
-    fetch('http://localhost:5000/api/articles')
+    fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000')+'/api/articles')
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -147,7 +147,7 @@ export default function Home() {
       .catch(err => console.error('Articles yükleme hatası:', err));
 
     // En yakın şubeyi yükle
-    fetch('http://localhost:5000/api/branches')
+    fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000')+'/api/branches')
       .then(res => res.json())
       .then(data => {
         if (data.success && data.data.length > 0) {

@@ -17,7 +17,7 @@ export default function ArticleDetail() {
     if (!id) return;
 
     // Makaleyi yükle
-    fetch(`http://localhost:5000/api/articles/${id}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/articles/${id}`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -33,7 +33,7 @@ export default function ArticleDetail() {
       .finally(() => setLoading(false));
 
     // Logo'yu yükle
-    fetch('http://localhost:5000/api/settings')
+    fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000')+'/api/settings')
       .then(res => res.json())
       .then(data => {
         if (data.success) {

@@ -13,7 +13,7 @@ export default function Iletisim() {
 
   useEffect(() => {
     // Şubeleri yükle
-    fetch('http://localhost:5000/api/branches')
+    fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000')+'/api/branches')
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -23,7 +23,7 @@ export default function Iletisim() {
       .catch(err => console.error('Şube yükleme hatası:', err));
 
     // Logo'yu yükle
-    fetch('http://localhost:5000/api/settings')
+    fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000')+'/api/settings')
       .then(res => res.json())
       .then(data => {
         if (data.success) {

@@ -37,7 +37,7 @@ export default function Piyasalar() {
     const interval = setInterval(loadAlarmCount, 5000);
     
     // Logo'yu yükle
-    fetch('http://localhost:5000/api/settings')
+    fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000')+'/api/settings')
       .then(res => res.json())
       .then(data => {
         if (data.success) {
