@@ -485,7 +485,7 @@ export default function Home() {
             ) : (
               <div className="divide-y divide-gray-100 max-h-[600px] overflow-y-auto price-table-scroll">
                 {/* Tablo Başlıkları */}
-                <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 font-semibold text-gray-700 text-sm">
+                <div className="grid grid-cols-12 gap-4 px-6 bg-gray-50 border-b border-gray-200 font-semibold text-gray-700 text-sm items-center" style={{ height: '52px' }}>
                   <div className="col-span-4">Ürün Adı</div>
                   <div className="col-span-3 text-right">Alış Fiyatı</div>
                   <div className="col-span-3 text-right">Satış Fiyatı</div>
@@ -501,11 +501,12 @@ export default function Home() {
                     const isFalling = price.direction && (price.direction.alis_dir === 'down' || price.direction.satis_dir === 'down');
 
                     return (
-                      <div 
-                        key={price.code} 
-                        className={`grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 items-center border-b border-gray-100 ${
+                      <div
+                        key={price.code}
+                        className={`grid grid-cols-12 gap-4 px-6 hover:bg-gray-50 transition-all duration-300 items-center border-b border-gray-100 ${
                           highlightedPrices[price.code] ? 'bg-yellow-50/50' : ''
                         }`}
+                        style={{ height: '72px' }}
                       >
                         {/* Ürün Adı */}
                         <div className="col-span-4 flex items-center space-x-3">
