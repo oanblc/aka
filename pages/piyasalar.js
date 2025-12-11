@@ -131,41 +131,34 @@ export default function Piyasalar() {
 
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
         {/* Top Navbar - Elegant Gold Theme */}
-        <nav className="bg-gradient-to-r from-amber-50 via-white to-amber-50 border-b border-gray-200 sticky top-0 z-50 shadow-sm backdrop-blur-md bg-opacity-95">
+        <nav className="sticky top-0 z-50 shadow-sm backdrop-blur-md bg-opacity-95" style={{backgroundColor: '#f7de00', borderBottom: '2px solid #d4c000'}}>
           <div className="max-w-7xl mx-auto px-6">
             <div className="flex items-center justify-between h-20">
               {/* Logo */}
               <Link href="/" className="flex items-center space-x-3">
                 {logoBase64 ? (
-                  <img 
-                    src={logoBase64} 
-                    alt="Logo" 
-                    className="object-contain transition-transform hover:scale-105" 
-                    style={{ 
-                      height: `${logoHeight}px`, 
+                  <img
+                    src={logoBase64}
+                    alt="Logo"
+                    className="object-contain transition-transform hover:scale-105"
+                    style={{
+                      height: `${logoHeight}px`,
                       width: logoWidth === 'auto' ? 'auto' : `${logoWidth}px`,
                       maxWidth: '300px'
-                    }} 
+                    }}
                   />
                 ) : (
                   <>
                     <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full blur-md opacity-30"></div>
+                      <div className="absolute inset-0 rounded-full blur-md opacity-30" style={{backgroundColor: '#f7de00'}}></div>
                       <svg width="44" height="44" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative">
-                        <circle cx="20" cy="20" r="18" fill="url(#gold-gradient-nav)" stroke="#d97706" strokeWidth="2"/>
-                        <circle cx="20" cy="20" r="12" fill="none" stroke="#d97706" strokeWidth="1.5"/>
-                        <defs>
-                          <linearGradient id="gold-gradient-nav" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stopColor="#fbbf24"/>
-                            <stop offset="50%" stopColor="#f59e0b"/>
-                            <stop offset="100%" stopColor="#d97706"/>
-                          </linearGradient>
-                        </defs>
+                        <circle cx="20" cy="20" r="18" fill="#f7de00" stroke="#1f2937" strokeWidth="2"/>
+                        <circle cx="20" cy="20" r="12" fill="none" stroke="#1f2937" strokeWidth="1.5"/>
                       </svg>
                     </div>
                     <div>
-                      <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent" style={{fontFamily: 'serif', letterSpacing: '0.5px'}}>NOMANOĞLU</h1>
-                      <p className="text-xs text-amber-600 font-semibold tracking-wider">Kuyumculuk</p>
+                      <h1 className="text-2xl font-bold text-gray-900" style={{fontFamily: 'serif', letterSpacing: '0.5px'}}>NOMANOĞLU</h1>
+                      <p className="text-xs text-gray-800 font-semibold tracking-wider">Kuyumculuk</p>
                     </div>
                   </>
                 )}
@@ -173,13 +166,13 @@ export default function Piyasalar() {
 
               {/* Nav Links - Center */}
               <div className="hidden md:flex items-center space-x-2">
-                <Link href="/" className="px-5 py-2.5 text-sm font-medium text-gray-700 hover:text-amber-700 hover:bg-amber-50/50 rounded-t-lg transition-all">
+                <Link href="/" className="px-5 py-2.5 text-sm font-medium text-gray-900 hover:text-gray-900 rounded-t-lg transition-all hover:bg-white/40">
                   Anasayfa
                 </Link>
-                <Link href="/piyasalar" className="px-5 py-2.5 text-sm font-semibold text-amber-700 bg-amber-50 border-b-2 border-amber-600 rounded-t-lg transition-all">
+                <Link href="/piyasalar" className="px-5 py-2.5 text-sm font-semibold text-gray-900 border-b-2 border-gray-900 rounded-t-lg transition-all" style={{backgroundColor: 'rgba(0,0,0,0.1)'}}>
                   Piyasalar
                 </Link>
-                <Link href="/alarms" className="relative px-5 py-2.5 text-sm font-medium text-gray-700 hover:text-amber-700 hover:bg-amber-50/50 rounded-t-lg transition-all">
+                <Link href="/alarms" className="relative px-5 py-2.5 text-sm font-medium text-gray-900 hover:text-gray-900 rounded-t-lg transition-all hover:bg-white/40">
                   <span>Alarmlar</span>
                   {activeAlarmsCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg ring-2 ring-white">
@@ -187,7 +180,7 @@ export default function Piyasalar() {
                     </span>
                   )}
                 </Link>
-                <Link href="/iletisim" className="px-5 py-2.5 text-sm font-medium text-gray-700 hover:text-amber-700 hover:bg-amber-50/50 rounded-t-lg transition-all">
+                <Link href="/iletisim" className="px-5 py-2.5 text-sm font-medium text-gray-900 hover:text-gray-900 rounded-t-lg transition-all hover:bg-white/40">
                   İletişim
                 </Link>
               </div>
@@ -198,9 +191,9 @@ export default function Piyasalar() {
                   href="https://wa.me/905322904601"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-2 px-4 py-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 hover:border-amber-300 text-amber-700 hover:text-amber-800 rounded-lg transition-all group"
+                  className="flex items-center space-x-2 px-4 py-2.5 bg-gray-900 hover:bg-gray-800 border border-gray-900 text-white rounded-lg transition-all group"
                 >
-                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                   </svg>
                   <span className="text-sm font-semibold hidden sm:inline">WhatsApp Destek</span>
@@ -210,99 +203,6 @@ export default function Piyasalar() {
             </div>
           </div>
         </nav>
-
-        {/* Mobile App Download Banner */}
-        <div className="bg-gradient-to-br from-gray-900 to-gray-800 border-b border-gray-700">
-          <div className="max-w-7xl mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              {/* Left: Text & Buttons */}
-              <div className="flex items-center space-x-6">
-                <div className="hidden md:block">
-                  <h3 className="text-white font-bold text-lg mb-1">Mobil Uygulamamızı İndirin</h3>
-                  <p className="text-gray-400 text-sm">Fiyatları anında takip edin, alarm kurun ve daha fazlası!</p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <a href="#" className="inline-block group">
-                    <div className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-all border border-gray-700 hover:border-amber-500">
-                      <div className="flex items-center space-x-2">
-                        <svg className="w-6 h-6 text-gray-300 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                        </svg>
-                        <div className="text-left">
-                          <p className="text-[9px] text-gray-400 leading-none">Download on</p>
-                          <p className="text-sm text-white font-semibold leading-tight">App Store</p>
-                        </div>
-                      </div>
-                    </div>
-                  </a>
-                  <a href="#" className="inline-block group">
-                    <div className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-all border border-gray-700 hover:border-amber-500">
-                      <div className="flex items-center space-x-2">
-                        <svg className="w-6 h-6 text-gray-300 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M3 20.5v-17c0-.59.34-1.11.84-1.35L13.69 12l-9.85 9.85c-.5-.24-.84-.76-.84-1.35zm10.84-8.5l2.64-2.64 4.37 2.52c.5.29.5 1.05 0 1.34l-4.37 2.52L13.84 12zM3.85 3.65L13.69 12 3.85 20.35V3.65z"/>
-                        </svg>
-                        <div className="text-left">
-                          <p className="text-[9px] text-gray-400 leading-none">GET IT ON</p>
-                          <p className="text-sm text-white font-semibold leading-tight">Google Play</p>
-                        </div>
-                      </div>
-                    </div>
-                  </a>
-                </div>
-                <div className="md:hidden">
-                  <p className="text-white font-semibold text-sm">Mobil Uygulamamızı İndirin</p>
-                </div>
-              </div>
-
-              {/* Right: QR Code */}
-              <div className="hidden lg:flex items-center space-x-4">
-                <div className="text-right">
-                  <p className="text-white font-semibold text-sm mb-1">QR Kodu Tarayın</p>
-                  <p className="text-gray-400 text-xs">Hemen indirin</p>
-                </div>
-                <div className="bg-white rounded-lg p-2">
-                  <svg width="64" height="64" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="128" height="128" fill="white"/>
-                    <rect x="8" y="8" width="40" height="40" stroke="black" strokeWidth="3" fill="none"/>
-                    <rect x="16" y="16" width="24" height="24" fill="black"/>
-                    <rect x="80" y="8" width="40" height="40" stroke="black" strokeWidth="3" fill="none"/>
-                    <rect x="88" y="16" width="24" height="24" fill="black"/>
-                    <rect x="8" y="80" width="40" height="40" stroke="black" strokeWidth="3" fill="none"/>
-                    <rect x="16" y="88" width="24" height="24" fill="black"/>
-                    <rect x="56" y="8" width="8" height="8" fill="black"/>
-                    <rect x="56" y="24" width="8" height="8" fill="black"/>
-                    <rect x="56" y="40" width="8" height="8" fill="black"/>
-                    <rect x="8" y="56" width="8" height="8" fill="black"/>
-                    <rect x="24" y="56" width="8" height="8" fill="black"/>
-                    <rect x="40" y="56" width="8" height="8" fill="black"/>
-                    <rect x="56" y="56" width="8" height="8" fill="black"/>
-                    <rect x="72" y="56" width="8" height="8" fill="black"/>
-                    <rect x="88" y="56" width="8" height="8" fill="black"/>
-                    <rect x="104" y="56" width="8" height="8" fill="black"/>
-                    <rect x="112" y="56" width="8" height="8" fill="black"/>
-                    <rect x="56" y="72" width="8" height="8" fill="black"/>
-                    <rect x="72" y="72" width="8" height="8" fill="black"/>
-                    <rect x="88" y="72" width="8" height="8" fill="black"/>
-                    <rect x="104" y="72" width="8" height="8" fill="black"/>
-                    <rect x="56" y="88" width="8" height="8" fill="black"/>
-                    <rect x="72" y="88" width="8" height="8" fill="black"/>
-                    <rect x="104" y="88" width="8" height="8" fill="black"/>
-                    <rect x="56" y="104" width="8" height="8" fill="black"/>
-                    <rect x="88" y="104" width="8" height="8" fill="black"/>
-                    <rect x="104" y="104" width="8" height="8" fill="black"/>
-                    <rect x="56" y="120" width="8" height="8" fill="black"/>
-                    <rect x="72" y="120" width="8" height="8" fill="black"/>
-                    <rect x="88" y="120" width="8" height="8" fill="black"/>
-                    <rect x="120" y="72" width="8" height="8" fill="black"/>
-                    <rect x="120" y="88" width="8" height="8" fill="black"/>
-                    <rect x="120" y="104" width="8" height="8" fill="black"/>
-                    <rect x="120" y="120" width="8" height="8" fill="black"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Main Content - Full Width Price Table */}
         <div className="max-w-7xl mx-auto px-6 py-6">
