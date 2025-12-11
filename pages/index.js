@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useWebSocket } from '../hooks/useWebSocket';
@@ -9,6 +9,7 @@ export default function Home() {
   const { prices: websocketPrices, isConnected, lastUpdate: wsLastUpdate } = useWebSocket();
   const { logoBase64, logoHeight, logoWidth, isLoaded: logoLoaded } = useSettings();
   const [prices, setPrices] = useState([]);
+  const previousPricesRef = useRef([]); // Önceki fiyatları sakla
   const [priceOrder, setPriceOrder] = useState([]); // Fiyat sıralamasını sabit tut
   const [isInitialLoad, setIsInitialLoad] = useState(true); // İlk yükleme durumu
   const [lastUpdate, setLastUpdate] = useState(null);
@@ -29,37 +30,51 @@ export default function Home() {
 
   // WebSocket'ten gelen fiyatları güncelle - SADECE CUSTOM FİYATLARI GÖSTER
   useEffect(() => {
-    if (websocketPrices && websocketPrices.length > 0) {
+    // websocketPrices geçerli ve dolu olmalı
+    if (websocketPrices && Array.isArray(websocketPrices) && websocketPrices.length > 0) {
       // Ana sayfada sadece custom fiyatları göster
       const customPrices = websocketPrices.filter(p => p.isCustom === true);
 
-      // İlk yüklemede sıralamayı belirle ve kaydet
-      if (isInitialLoad && customPrices.length > 0) {
-        const sortedPrices = [...customPrices].sort((a, b) => (a.order || 0) - (b.order || 0));
-        setPriceOrder(sortedPrices.map(p => p.code));
-        setIsInitialLoad(false);
-      }
-
-      // Fiyat değişimlerini tespit et ve highlight et
-      const newHighlighted = {};
-      customPrices.forEach(newPrice => {
-        const oldPrice = prices.find(p => p.code === newPrice.code);
-        if (oldPrice && (oldPrice.calculatedAlis !== newPrice.calculatedAlis || oldPrice.calculatedSatis !== newPrice.calculatedSatis)) {
-          newHighlighted[newPrice.code] = true;
-          // 1 saniye sonra highlight'ı kaldır
-          setTimeout(() => {
-            setHighlightedPrices(prev => ({ ...prev, [newPrice.code]: false }));
-          }, 1000);
+      // Sadece geçerli custom fiyatlar varsa güncelle
+      if (customPrices.length > 0) {
+        // İlk yüklemede sıralamayı belirle ve kaydet
+        if (isInitialLoad) {
+          const sortedPrices = [...customPrices].sort((a, b) => (a.order || 0) - (b.order || 0));
+          setPriceOrder(sortedPrices.map(p => p.code));
+          setIsInitialLoad(false);
         }
-      });
 
-      if (Object.keys(newHighlighted).length > 0) {
-        setHighlightedPrices(prev => ({ ...prev, ...newHighlighted }));
+        // Fiyat değişimlerini tespit et ve highlight et
+        const newHighlighted = {};
+        customPrices.forEach(newPrice => {
+          const oldPrice = previousPricesRef.current.find(p => p.code === newPrice.code);
+          if (oldPrice && (oldPrice.calculatedAlis !== newPrice.calculatedAlis || oldPrice.calculatedSatis !== newPrice.calculatedSatis)) {
+            newHighlighted[newPrice.code] = true;
+            // 1 saniye sonra highlight'ı kaldır
+            setTimeout(() => {
+              setHighlightedPrices(prev => ({ ...prev, [newPrice.code]: false }));
+            }, 1000);
+          }
+        });
+
+        if (Object.keys(newHighlighted).length > 0) {
+          setHighlightedPrices(prev => ({ ...prev, ...newHighlighted }));
+        }
+
+        // Fiyatları güncelle ve ref'e kaydet
+        setPrices(customPrices);
+        previousPricesRef.current = customPrices;
+        setLastUpdate(new Date());
+        console.log(`📊 Ana sayfa: ${customPrices.length} custom fiyat gösteriliyor (${websocketPrices.length} toplam fiyat)`);
+      } else if (previousPricesRef.current.length > 0) {
+        // Boş custom fiyat gelirse önceki fiyatları koru
+        console.log('⚠️ Boş custom fiyat, önceki fiyatlar korunuyor');
+        setPrices(previousPricesRef.current);
       }
-
-      setPrices(customPrices);
-      setLastUpdate(new Date());
-      console.log(`📊 Ana sayfa: ${customPrices.length} custom fiyat gösteriliyor (${websocketPrices.length} toplam fiyat)`);
+    } else if (previousPricesRef.current.length > 0) {
+      // WebSocket verisi boş/geçersiz gelirse önceki fiyatları koru
+      console.log('⚠️ WebSocket verisi boş, önceki fiyatlar korunuyor');
+      setPrices(previousPricesRef.current);
     }
   }, [websocketPrices]);
 
@@ -434,12 +449,12 @@ export default function Home() {
                 <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-blue-600"></div>
                 <p className="text-gray-500 mt-3 text-sm">Fiyatlar yükleniyor...</p>
               </div>
-            ) : filteredPrices.length === 0 ? (
+            ) : filteredPrices.length === 0 && (showOnlyFavorites || search) ? (
               <div className="text-center py-12">
                 <Star size={40} className="mx-auto text-gray-300 mb-3" strokeWidth={2} />
                 <p className="text-gray-600 text-sm">
-                  {showOnlyFavorites 
-                    ? 'Henüz favori eklemediniz' 
+                  {showOnlyFavorites
+                    ? 'Henüz favori eklemediniz'
                     : 'Sonuç bulunamadı'
                   }
                 </p>
@@ -452,6 +467,20 @@ export default function Home() {
                         Tüm Fiyatlara Dön
                       </button>
                     )}
+                    {search && (
+                      <button
+                        onClick={() => setSearch('')}
+                        className="mt-3 px-4 py-2 text-sm font-medium rounded transition-colors"
+                        style={{backgroundColor: '#f7de00', color: '#1f2937', border: '2px solid #1f2937'}}
+                      >
+                        Aramayı Temizle
+                      </button>
+                    )}
+              </div>
+            ) : filteredPrices.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-blue-600"></div>
+                <p className="text-gray-500 mt-3 text-sm">Fiyatlar güncelleniyor...</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-100 max-h-[600px] overflow-y-auto price-table-scroll">
