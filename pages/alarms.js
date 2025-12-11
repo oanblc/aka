@@ -2,16 +2,15 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useWebSocket } from '../hooks/useWebSocket';
+import { useSettings } from '../contexts/SettingsContext';
 import { ArrowLeft, Plus, Trash2, Bell, TrendingUp, TrendingDown, CheckCircle, AlertTriangle, X, AlertCircle, MapPin, Phone, Mail, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 
 export default function Alarms() {
   const { prices } = useWebSocket();
+  const { logoBase64, logoHeight, logoWidth, isLoaded: logoLoaded } = useSettings();
   const [alarms, setAlarms] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [triggeredAlarms, setTriggeredAlarms] = useState([]);
-  const [logoBase64, setLogoBase64] = useState('');
-  const [logoHeight, setLogoHeight] = useState(48);
-  const [logoWidth, setLogoWidth] = useState('auto');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -28,18 +27,6 @@ export default function Alarms() {
     if (savedAlarms) {
       setAlarms(JSON.parse(savedAlarms));
     }
-
-    // Logo'yu yükle
-    fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000')+'/api/settings')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setLogoBase64(data.data.logoBase64 || '');
-          setLogoHeight(data.data.logoHeight || 48);
-          setLogoWidth(data.data.logoWidth || 'auto');
-        }
-      })
-      .catch(err => console.error('Logo yükleme hatası:', err));
 
     // Bildirim izni iste
     if ('Notification' in window && Notification.permission === 'default') {
@@ -177,7 +164,7 @@ export default function Alarms() {
                       maxWidth: '300px'
                     }}
                   />
-                ) : (
+                ) : logoLoaded ? (
                   <>
                     <div className="relative">
                       <div className="absolute inset-0 rounded-full blur-md opacity-30" style={{backgroundColor: '#f7de00'}}></div>
@@ -191,6 +178,8 @@ export default function Alarms() {
                       <p className="text-xs text-gray-800 font-semibold tracking-wider">Kuyumculuk</p>
                     </div>
                   </>
+                ) : (
+                  <div style={{ height: `${logoHeight}px`, minWidth: '150px' }}></div>
                 )}
               </Link>
 

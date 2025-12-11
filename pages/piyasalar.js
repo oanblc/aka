@@ -2,18 +2,17 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useWebSocket } from '../hooks/useWebSocket';
+import { useSettings } from '../contexts/SettingsContext';
 import { Search, TrendingUp, TrendingDown, DollarSign, Euro, Coins, Gem, Star, Maximize2, Bell, AlertCircle, MapPin, Phone, Mail, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 
 export default function Piyasalar() {
   const { prices, isConnected } = useWebSocket();
+  const { logoBase64, logoHeight, logoWidth, isLoaded: logoLoaded } = useSettings();
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [mounted, setMounted] = useState(false);
   const [favorites, setFavorites] = useState([]);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
-  const [logoBase64, setLogoBase64] = useState('');
-  const [logoHeight, setLogoHeight] = useState(48);
-  const [logoWidth, setLogoWidth] = useState('auto');
   const [activeAlarmsCount, setActiveAlarmsCount] = useState(0);
   const [priceOrder, setPriceOrder] = useState([]); // Sabit sıralama
   const [isInitialLoad, setIsInitialLoad] = useState(true); // İlk yükleme durumu
@@ -37,18 +36,6 @@ export default function Piyasalar() {
     };
     loadAlarmCount();
     const interval = setInterval(loadAlarmCount, 5000);
-    
-    // Logo'yu yükle
-    fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000')+'/api/settings')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setLogoBase64(data.data.logoBase64 || '');
-          setLogoHeight(data.data.logoHeight || 48);
-          setLogoWidth(data.data.logoWidth || 'auto');
-        }
-      })
-      .catch(err => console.error('Logo yükleme hatası:', err));
 
     return () => clearInterval(interval);
   }, []);
@@ -170,7 +157,7 @@ export default function Piyasalar() {
                       maxWidth: '300px'
                     }}
                   />
-                ) : (
+                ) : logoLoaded ? (
                   <>
                     <div className="relative">
                       <div className="absolute inset-0 rounded-full blur-md opacity-30" style={{backgroundColor: '#f7de00'}}></div>
@@ -184,6 +171,8 @@ export default function Piyasalar() {
                       <p className="text-xs text-gray-800 font-semibold tracking-wider">Kuyumculuk</p>
                     </div>
                   </>
+                ) : (
+                  <div style={{ height: `${logoHeight}px`, minWidth: '150px' }}></div>
                 )}
               </Link>
 

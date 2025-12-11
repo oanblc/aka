@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useWebSocket } from '../hooks/useWebSocket';
+import { useSettings } from '../contexts/SettingsContext';
 import { Menu, Bell, Search, TrendingUp, TrendingDown, DollarSign, Euro, Coins, Gem, Star, Maximize2, Phone, Mail, MapPin, Clock, Facebook, Twitter, Instagram, Youtube, CheckCircle, AlertCircle, X } from 'lucide-react';
 
 export default function Home() {
   const { prices: websocketPrices, isConnected, lastUpdate: wsLastUpdate } = useWebSocket();
+  const { logoBase64, logoHeight, logoWidth, isLoaded: logoLoaded } = useSettings();
   const [prices, setPrices] = useState([]);
   const [priceOrder, setPriceOrder] = useState([]); // Fiyat sıralamasını sabit tut
   const [isInitialLoad, setIsInitialLoad] = useState(true); // İlk yükleme durumu
@@ -16,9 +18,6 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [favorites, setFavorites] = useState([]);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
-  const [logoBase64, setLogoBase64] = useState('');
-  const [logoHeight, setLogoHeight] = useState(48);
-  const [logoWidth, setLogoWidth] = useState('auto');
   const [activeAlarmsCount, setActiveAlarmsCount] = useState(0);
   const [nearestBranch, setNearestBranch] = useState(null);
   const [showAppBanner, setShowAppBanner] = useState(true);
@@ -122,18 +121,6 @@ export default function Home() {
 
     // Her 5 saniyede bir alarm sayısını güncelle
     const interval = setInterval(loadAlarmCount, 5000);
-    
-    // Logo'yu yükle
-    fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000')+'/api/settings')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setLogoBase64(data.data.logoBase64 || '');
-          setLogoHeight(data.data.logoHeight || 48);
-          setLogoWidth(data.data.logoWidth || 'auto');
-        }
-      })
-      .catch(err => console.error('Logo yükleme hatası:', err));
 
     // Family Cards'ı yükle
     fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000')+'/api/family-cards')
@@ -309,17 +296,17 @@ export default function Home() {
               {/* Logo */}
               <Link href="/" className="flex items-center space-x-3">
                 {logoBase64 ? (
-                  <img 
-                    src={logoBase64} 
-                    alt="Logo" 
-                    className="object-contain transition-transform hover:scale-105" 
-                    style={{ 
-                      height: `${logoHeight}px`, 
+                  <img
+                    src={logoBase64}
+                    alt="Logo"
+                    className="object-contain transition-transform hover:scale-105"
+                    style={{
+                      height: `${logoHeight}px`,
                       width: logoWidth === 'auto' ? 'auto' : `${logoWidth}px`,
                       maxWidth: '300px'
-                    }} 
+                    }}
                   />
-                ) : (
+                ) : logoLoaded ? (
                   <>
                     <div className="relative">
                       <div className="absolute inset-0 rounded-full blur-md opacity-30" style={{backgroundColor: '#f7de00'}}></div>
@@ -333,6 +320,8 @@ export default function Home() {
                       <p className="text-xs text-gray-800 font-semibold tracking-wider">Kuyumculuk</p>
                     </div>
                   </>
+                ) : (
+                  <div style={{ height: `${logoHeight}px`, minWidth: '150px' }}></div>
                 )}
               </Link>
 

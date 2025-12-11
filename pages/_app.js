@@ -1,5 +1,6 @@
 import '../styles/globals.css'
 import { Inter } from 'next/font/google'
+import { SettingsProvider } from '../contexts/SettingsContext'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -9,9 +10,11 @@ const inter = Inter({
 
 export default function App({ Component, pageProps }) {
   return (
-    <div className={`${inter.variable} font-sans`}>
-      <Component {...pageProps} />
-    </div>
+    <SettingsProvider>
+      <div className={`${inter.variable} font-sans`}>
+        <Component {...pageProps} />
+      </div>
+    </SettingsProvider>
   )
 }
 
