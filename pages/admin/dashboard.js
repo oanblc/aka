@@ -573,9 +573,29 @@ export default function AdminDashboard() {
   const calculatePreview = (config) => {
     const source = sourcePrices.find(p => p.code === config.sourceCode);
     if (!source) return 0;
-    
+
     const rawPrice = config.sourceType === 'alis' ? source.rawAlis : source.rawSatis;
     return (rawPrice * config.multiplier) + config.addition;
+  };
+
+  // Sıra numarası değiştirme fonksiyonu
+  const handleOrderChange = async (priceId, newOrder) => {
+    const orderNum = parseInt(newOrder);
+    if (isNaN(orderNum) || orderNum < 0) return;
+
+    // Önce state'i güncelle
+    const updatedPrices = customPrices.map(p =>
+      p.id === priceId ? { ...p, order: orderNum } : p
+    );
+    setCustomPrices(updatedPrices);
+
+    // Backend'e kaydet
+    try {
+      await axios.put(`${apiUrl}/api/custom-prices/${priceId}`, { order: orderNum });
+      console.log('✅ Sıra numarası güncellendi');
+    } catch (error) {
+      console.error('❌ Sıra güncelleme hatası:', error);
+    }
   };
 
   const filteredPrices = customPrices
@@ -909,6 +929,7 @@ export default function AdminDashboard() {
                 <table className="w-full">
                   <thead>
                     <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+                      <th className="text-center px-2 py-4 text-sm font-bold text-gray-700 w-16">Sıra</th>
                       <th className="text-center px-2 py-4 text-sm font-bold text-gray-700 w-12">
                         <GripVertical size={18} className="mx-auto text-gray-400" />
                       </th>
@@ -947,9 +968,18 @@ export default function AdminDashboard() {
                           style={{ cursor: 'grab' }}
                         >
                           <td className="px-2 py-4 text-center">
-                            <GripVertical 
-                              size={20} 
-                              className="mx-auto text-gray-400 hover:text-gray-600 transition-colors" 
+                            <input
+                              type="number"
+                              min="0"
+                              value={price.order || 0}
+                              onChange={(e) => handleOrderChange(price.id, e.target.value)}
+                              className="w-12 px-1 py-1 text-center border border-gray-300 rounded text-sm font-bold focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                            />
+                          </td>
+                          <td className="px-2 py-4 text-center">
+                            <GripVertical
+                              size={20}
+                              className="mx-auto text-gray-400 hover:text-gray-600 transition-colors"
                             />
                           </td>
                           <td className="px-6 py-4">
