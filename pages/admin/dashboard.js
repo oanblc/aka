@@ -552,13 +552,13 @@ export default function AdminDashboard() {
     // State'i güncelle
     setCustomPrices(updatedPrices);
 
-    // Backend'e kaydet
+    // Backend'e toplu sıralama gönder
     try {
-      await Promise.all(
-        updatedPrices.map(price =>
-          axios.put(`${apiUrl}/api/custom-prices/${price.id}`, { order: price.order })
-        )
-      );
+      const orders = updatedPrices.map(price => ({
+        id: price.id,
+        order: price.order
+      }));
+      await axios.put(`${apiUrl}/api/custom-prices/reorder`, { orders });
       console.log('✅ Sıralama kaydedildi');
     } catch (error) {
       console.error('❌ Sıralama kaydetme hatası:', error);

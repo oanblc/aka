@@ -756,6 +756,50 @@ app.delete('/api/custom-prices/:id', async (req, res) => {
   res.json({ success: true, message: 'Fiyat silindi' });
 });
 
+// Toplu sıralama güncelleme endpoint'i
+app.put('/api/custom-prices/reorder', async (req, res) => {
+  const { orders } = req.body; // [{ id: '123', order: 0 }, { id: '456', order: 1 }, ...]
+
+  if (!orders || !Array.isArray(orders)) {
+    return res.status(400).json({ success: false, message: 'orders array required' });
+  }
+
+  console.log(`📋 Toplu sıralama güncelleniyor: ${orders.length} öğe`);
+
+  // Tüm order'ları güncelle
+  for (const item of orders) {
+    const index = customPrices.findIndex(p => p.id === item.id);
+    if (index !== -1) {
+      customPrices[index].order = item.order;
+      customPrices[index].updatedAt = new Date().toISOString();
+    }
+  }
+
+  // Dosyaya kaydet
+  saveCustomPrices();
+
+  // MongoDB'ye kaydet
+  if (isMongoConnected) {
+    try {
+      for (const item of orders) {
+        await CustomPrice.findOneAndUpdate(
+          { $or: [{ _id: item.id }, { code: customPrices.find(p => p.id === item.id)?.code }] },
+          { order: item.order, updatedAt: new Date() }
+        );
+      }
+      console.log(`💾 MongoDB: ${orders.length} sıralama güncellendi`);
+    } catch (error) {
+      console.error('❌ MongoDB sıralama güncelleme hatası:', error.message);
+    }
+  }
+
+  // Hemen WebSocket'e yayınla
+  updatePrices();
+
+  console.log(`✅ Sıralama güncellendi`);
+  res.json({ success: true, message: 'Sıralama güncellendi' });
+});
+
 // Ayarları getir
 app.get('/api/settings', (req, res) => {
   res.json({ success: true, data: settings });
