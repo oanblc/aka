@@ -584,16 +584,34 @@ export default function AdminDashboard() {
     const orderNum = parseInt(newOrder);
     if (isNaN(orderNum) || orderNum < 0) return;
 
-    // Önce state'i güncelle
-    const updatedPrices = customPrices.map(p =>
-      p.id === priceId ? { ...p, order: orderNum } : p
-    );
+    // Mevcut listeyi order'a göre sırala
+    const sortedPrices = [...customPrices].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    // Değiştirilen öğeyi bul ve listeden çıkar
+    const currentIndex = sortedPrices.findIndex(p => p.id === priceId);
+    const [movedItem] = sortedPrices.splice(currentIndex, 1);
+
+    // Yeni pozisyona ekle (orderNum sınırları içinde)
+    const newIndex = Math.min(Math.max(0, orderNum), sortedPrices.length);
+    sortedPrices.splice(newIndex, 0, movedItem);
+
+    // Tüm order'ları yeniden numarala (0'dan başlayarak)
+    const updatedPrices = sortedPrices.map((price, index) => ({
+      ...price,
+      order: index
+    }));
+
+    // State'i güncelle
     setCustomPrices(updatedPrices);
 
-    // Backend'e kaydet
+    // Backend'e toplu sıralama gönder
     try {
-      await axios.put(`${apiUrl}/api/custom-prices/${priceId}`, { order: orderNum });
-      console.log('✅ Sıra numarası güncellendi');
+      const orders = updatedPrices.map(price => ({
+        id: price.id,
+        order: price.order
+      }));
+      await axios.put(`${apiUrl}/api/custom-prices/reorder`, { orders });
+      console.log('✅ Sıra numaraları güncellendi');
     } catch (error) {
       console.error('❌ Sıra güncelleme hatası:', error);
     }
