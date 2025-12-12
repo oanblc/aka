@@ -534,17 +534,18 @@ export default function AdminDashboard() {
       return;
     }
 
-    // Yeni sıralamayı hesapla
-    const newPrices = [...customPrices];
-    const draggedIndex = newPrices.findIndex(p => p.id === draggedItem.id);
-    const targetIndex = newPrices.findIndex(p => p.id === draggedOverItem.id);
+    // Önce mevcut listeyi order'a göre sırala
+    const sortedPrices = [...customPrices].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    const draggedIndex = sortedPrices.findIndex(p => p.id === draggedItem.id);
+    const targetIndex = sortedPrices.findIndex(p => p.id === draggedOverItem.id);
 
     // Array'den çıkar ve yeni pozisyona ekle
-    const [removed] = newPrices.splice(draggedIndex, 1);
-    newPrices.splice(targetIndex, 0, removed);
+    const [removed] = sortedPrices.splice(draggedIndex, 1);
+    sortedPrices.splice(targetIndex, 0, removed);
 
-    // Order değerlerini güncelle
-    const updatedPrices = newPrices.map((price, index) => ({
+    // Order değerlerini güncelle (0'dan başlayarak)
+    const updatedPrices = sortedPrices.map((price, index) => ({
       ...price,
       order: index
     }));
