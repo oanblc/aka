@@ -495,11 +495,17 @@ app.post('/api/custom-prices', (req, res) => {
 app.put('/api/custom-prices/:id', (req, res) => {
   const { id } = req.params;
   const index = customPrices.findIndex(p => p.id === id);
-  
+
   if (index !== -1) {
     customPrices[index] = { ...customPrices[index], ...req.body, updatedAt: new Date().toISOString() };
     saveCustomPrices(); // DOSYAYA KAYDET
     console.log(`✅ Fiyat güncellendi: ${customPrices[index].name}`);
+
+    // Siralama degistiyse WebSocket'e yayinla
+    if (req.body.order !== undefined) {
+      updatePrices();
+    }
+
     res.json({ success: true, data: customPrices[index] });
   } else {
     res.status(404).json({ success: false, message: 'Fiyat bulunamadı' });
