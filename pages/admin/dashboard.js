@@ -985,13 +985,9 @@ export default function AdminDashboard() {
                           style={{ cursor: 'grab' }}
                         >
                           <td className="px-2 py-4 text-center">
-                            <input
-                              type="number"
-                              min="0"
-                              value={price.order || 0}
-                              onChange={(e) => handleOrderChange(price.id, e.target.value)}
-                              className="w-14 px-1 py-1 text-center border border-gray-300 rounded text-sm font-bold text-black focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                            />
+                            <span className="inline-block w-10 py-1 text-center bg-gray-100 rounded text-sm font-bold text-black">
+                              {price.order + 1}
+                            </span>
                           </td>
                           <td className="px-2 py-4 text-center">
                             <GripVertical
