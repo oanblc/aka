@@ -11,30 +11,60 @@ export const useWebSocket = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(null);
   const previousPricesRef = useRef([]);
+  const initialLoadDone = useRef(false);
 
-  // Sayfa yüklendiğinde cache'den fiyatları yükle
+  // Sayfa yüklendiğinde önce API'den, sonra localStorage'dan fiyatları yükle
   useEffect(() => {
-    try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+    const loadInitialPrices = async () => {
+      if (initialLoadDone.current) return;
+      initialLoadDone.current = true;
 
-      if (cached && cachedTime) {
-        const timeDiff = Date.now() - parseInt(cachedTime);
-        // Cache 5 dakikadan eskiyse kullanma
-        if (timeDiff < CACHE_DURATION) {
-          const cachedPrices = JSON.parse(cached);
-          if (cachedPrices && cachedPrices.length > 0) {
-            // Order'a gore sirala
-            const sortedPrices = [...cachedPrices].sort((a, b) => (a.order || 0) - (b.order || 0));
-            setPrices(sortedPrices);
-            previousPricesRef.current = sortedPrices;
-            console.log('📦 Cache\'den fiyatlar yüklendi:', sortedPrices.length);
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+
+      try {
+        // Önce API'den cache'li fiyatları çek
+        const response = await fetch(`${apiUrl}/api/prices/cached`);
+        const data = await response.json();
+
+        if (data.success && data.data && data.data.prices && data.data.prices.length > 0) {
+          const sortedPrices = [...data.data.prices].sort((a, b) => (a.order || 0) - (b.order || 0));
+          setPrices(sortedPrices);
+          previousPricesRef.current = sortedPrices;
+          setLastUpdate(data.data.meta?.time || data.updatedAt);
+          console.log('🌐 API\'den fiyatlar yüklendi:', sortedPrices.length);
+
+          // LocalStorage'a da kaydet
+          localStorage.setItem(CACHE_KEY, JSON.stringify(sortedPrices));
+          localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
+          return;
+        }
+      } catch (err) {
+        console.log('API cache erişilemedi, localStorage denenecek:', err.message);
+      }
+
+      // API'den alınamazsa localStorage'dan dene
+      try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+
+        if (cached && cachedTime) {
+          const timeDiff = Date.now() - parseInt(cachedTime);
+          if (timeDiff < CACHE_DURATION) {
+            const cachedPrices = JSON.parse(cached);
+            if (cachedPrices && cachedPrices.length > 0) {
+              const sortedPrices = [...cachedPrices].sort((a, b) => (a.order || 0) - (b.order || 0));
+              setPrices(sortedPrices);
+              previousPricesRef.current = sortedPrices;
+              console.log('📦 LocalStorage\'dan fiyatlar yüklendi:', sortedPrices.length);
+            }
           }
         }
+      } catch (err) {
+        console.error('LocalStorage okuma hatası:', err);
       }
-    } catch (err) {
-      console.error('Cache okuma hatası:', err);
-    }
+    };
+
+    loadInitialPrices();
   }, []);
 
   useEffect(() => {

@@ -14,6 +14,7 @@ const Settings = require('./models/Settings');
 const FamilyCard = require('./models/FamilyCard');
 const Article = require('./models/Article');
 const Branch = require('./models/Branch');
+const CachedPrices = require('./models/CachedPrices');
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/fiyat';
@@ -635,12 +636,52 @@ const updatePrices = async () => {
   
   io.emit('priceUpdate', priceData);
   console.log(`📡 ${calculatedCustomPrices.length} custom fiyat yayınlandı`);
+
+  // Fiyatları DB'ye kaydet (cache için)
+  if (isMongoConnected && priceData.prices.length > 0) {
+    CachedPrices.findOneAndUpdate(
+      { key: 'current_prices' },
+      {
+        key: 'current_prices',
+        prices: priceData.prices,
+        meta: priceData.meta,
+        updatedAt: new Date()
+      },
+      { upsert: true, new: true }
+    ).catch(err => console.error('Cache kaydetme hatası:', err.message));
+  }
 };
 
 // In-memory coefficients storage
 let coefficients = [];
 
 // API endpoints
+
+// Cache'den fiyatları getir (sayfa ilk yüklendiğinde kullanılır)
+app.get('/api/prices/cached', async (req, res) => {
+  try {
+    const cached = await CachedPrices.findOne({ key: 'current_prices' });
+    if (cached && cached.prices && cached.prices.length > 0) {
+      res.json({
+        success: true,
+        data: {
+          prices: cached.prices,
+          meta: cached.meta
+        },
+        updatedAt: cached.updatedAt
+      });
+    } else {
+      // Cache boşsa current endpoint'ten hesapla
+      res.json({
+        success: false,
+        message: 'Cache boş, WebSocket bağlantısı bekleniyor'
+      });
+    }
+  } catch (err) {
+    console.error('Cache okuma hatası:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 // Kaynak fiyatları getir (yeni fiyat oluştururken kullanmak için)
 app.get('/api/prices/sources', (req, res) => {
