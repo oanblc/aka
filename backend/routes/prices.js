@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getCurrentPrices } = require('../services/priceService');
 const PriceHistory = require('../models/PriceHistory');
+const CachedPrices = require('../models/CachedPrices');
 
 // Mevcut fiyatları getir (ham kaynak fiyatları)
 router.get('/current', (req, res) => {
@@ -67,6 +68,47 @@ router.get('/history/:code', async (req, res) => {
   } catch (error) {
     console.error('Fiyat geçmişi hatası:', error);
     res.status(500).json({ message: 'Sunucu hatası' });
+  }
+});
+
+// Cached fiyatları getir (ilk sayfa yüklemesi için)
+router.get('/cached', async (req, res) => {
+  try {
+    const cached = await CachedPrices.findOne({ key: 'current_prices' });
+
+    if (cached && cached.prices && cached.prices.length > 0) {
+      res.json({
+        success: true,
+        data: {
+          prices: cached.prices,
+          meta: cached.meta
+        },
+        updatedAt: cached.updatedAt
+      });
+    } else {
+      // Cache yoksa mevcut fiyatlardan custom olanları döndür
+      const prices = getCurrentPrices();
+      const customPrices = prices.filter(p => p.isCustom);
+
+      res.json({
+        success: true,
+        data: {
+          prices: customPrices,
+          meta: {
+            time: new Date().toISOString(),
+            maxDisplayItems: customPrices.length
+          }
+        },
+        updatedAt: new Date()
+      });
+    }
+  } catch (error) {
+    console.error('Cache fiyat getirme hatası:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Sunucu hatası',
+      error: error.message
+    });
   }
 });
 

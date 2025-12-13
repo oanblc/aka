@@ -1,6 +1,7 @@
 const { io: SocketIOClient } = require('socket.io-client');
 const Coefficient = require('../models/Coefficient');
 const PriceHistory = require('../models/PriceHistory');
+const CachedPrices = require('../models/CachedPrices');
 
 let currentPrices = {};
 let haremSocket = null;
@@ -350,6 +351,41 @@ const handlePriceData = async (rawData) => {
       if (serverIO) {
         serverIO.emit('priceUpdate', processedData);
         console.log('📡 Fiyatlar kendi WebSocket\'imize yayınlandı');
+
+        // Fiyatları MongoDB'ye cache olarak kaydet
+        const mongoose = require('mongoose');
+        if (mongoose.connection.readyState === 1 && processedData.prices.length > 0) {
+          // Sadece custom fiyatları cache'e kaydet
+          const customPrices = processedData.prices.filter(p => p.isCustom);
+          if (customPrices.length > 0) {
+            CachedPrices.findOneAndUpdate(
+              { key: 'current_prices' },
+              {
+                key: 'current_prices',
+                prices: customPrices.map(p => ({
+                  code: p.code,
+                  name: p.name,
+                  category: p.category,
+                  calculatedAlis: p.calculatedAlis,
+                  calculatedSatis: p.calculatedSatis,
+                  isCustom: p.isCustom,
+                  isVisible: p.isVisible,
+                  order: p.order
+                })),
+                meta: {
+                  time: new Date().toISOString(),
+                  maxDisplayItems: customPrices.length
+                },
+                updatedAt: new Date()
+              },
+              { upsert: true, new: true }
+            ).then(() => {
+              console.log(`💾 ${customPrices.length} custom fiyat cache'e kaydedildi`);
+            }).catch(err => {
+              console.error('❌ Cache kaydetme hatası:', err.message);
+            });
+          }
+        }
       }
     }
   } catch (error) {
