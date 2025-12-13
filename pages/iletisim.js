@@ -6,7 +6,7 @@ import { Menu, MapPin, Phone, Mail, Clock, Building2, Navigation, ExternalLink, 
 
 export default function İletişim() {
   const {
-    logoBase64, logoHeight, logoWidth,
+    logoBase64, logoHeight, logoWidth, faviconBase64,
     contactPhone, contactEmail, contactAddress, workingHours,
     socialFacebook, socialTwitter, socialInstagram, socialYoutube, socialWhatsapp
   } = useSettings();
@@ -105,6 +105,7 @@ export default function İletişim() {
       <Head>
         <title>İletişim & Şubelerimiz - NOMANOĞLU Kuyumculuk</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {faviconBase64 && <link rel="icon" href={faviconBase64} />}
       </Head>
 
       <div className="min-h-screen bg-gray-50">

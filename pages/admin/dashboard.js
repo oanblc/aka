@@ -21,6 +21,7 @@ export default function AdminDashboard() {
   const [logoFile, setLogoFile] = useState(null);
   const [logoHeight, setLogoHeight] = useState(48); // px
   const [logoWidth, setLogoWidth] = useState('auto'); // 'auto' veya px değeri
+  const [faviconBase64, setFaviconBase64] = useState('');
 
   // İletişim Bilgileri state
   const [contactPhone, setContactPhone] = useState('+90 (XXX) XXX XX XX');
@@ -180,6 +181,7 @@ export default function AdminDashboard() {
         setLogoBase64(s.logoBase64 || '');
         setLogoHeight(s.logoHeight || 48);
         setLogoWidth(s.logoWidth || 'auto');
+        setFaviconBase64(s.faviconBase64 || '');
         // İletişim bilgileri
         setContactPhone(s.contactPhone || '+90 (XXX) XXX XX XX');
         setContactEmail(s.contactEmail || 'info@nomanoglu.com');
@@ -331,6 +333,48 @@ export default function AdminDashboard() {
     setLogoFile(null);
   };
 
+  const handleFaviconUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Dosya tipi kontrolü - favicon için ico, png destekle
+      if (!file.type.startsWith('image/')) {
+        alert('Lütfen sadece resim dosyası yükleyin!');
+        e.target.value = '';
+        return;
+      }
+
+      // Dosya boyutu kontrolü (100KB önerilen limit)
+      const fileSizeKB = file.size / 1024;
+      if (file.size > 100 * 1024) { // 100KB
+        const proceed = confirm(
+          `UYARI: Dosya boyutu ${fileSizeKB.toFixed(2)} KB\n\n` +
+          `Önerilen maksimum: 100 KB\n\n` +
+          `Favicon için küçük dosyalar tercih edilmelidir.\n` +
+          `Devam etmek istiyor musunuz?`
+        );
+        if (!proceed) {
+          e.target.value = '';
+          return;
+        }
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        console.log(`Favicon yüklendi: ${fileSizeKB.toFixed(2)}KB`);
+        setFaviconBase64(reader.result);
+      };
+      reader.onerror = () => {
+        alert('Dosya okuma hatası! Lütfen tekrar deneyin.');
+        e.target.value = '';
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeFavicon = () => {
+    setFaviconBase64('');
+  };
+
   const saveSettings = async () => {
     try {
       await axios.post(`${apiUrl}/api/settings`, {
@@ -338,6 +382,7 @@ export default function AdminDashboard() {
         logoBase64,
         logoHeight,
         logoWidth,
+        faviconBase64,
         contactPhone,
         contactEmail,
         contactAddress,
@@ -1491,7 +1536,74 @@ export default function AdminDashboard() {
                 )}
               </div>
 
-              {/* Diğer Ayarlar */}
+              {/* Favicon Ayarları */}
+              <div className="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                  <Settings size={20} />
+                  <span>Favicon Ayarları</span>
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">
+                  Tarayıcı sekmesinde görünecek ikonu yükleyin (Önerilen: 32x32 veya 64x64 px, maks 100KB)
+                </p>
+
+                {faviconBase64 ? (
+                  <div className="space-y-4">
+                    <div className="border-2 border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <div className="flex items-center justify-center h-24 bg-white rounded-lg">
+                        <img
+                          src={faviconBase64}
+                          alt="Favicon"
+                          className="object-contain"
+                          style={{ width: '64px', height: '64px' }}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex space-x-2">
+                      <label className="flex-1 cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/*,.ico"
+                          onChange={handleFaviconUpload}
+                          className="hidden"
+                        />
+                        <div className="w-full px-4 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors font-medium text-center border border-blue-200">
+                          Değiştir
+                        </div>
+                      </label>
+                      <button
+                        onClick={removeFavicon}
+                        className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors font-medium border border-red-200"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*,.ico"
+                      onChange={handleFaviconUpload}
+                      className="hidden"
+                    />
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-amber-500 hover:bg-amber-50 transition-all">
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                          <Plus size={24} className="text-gray-400" />
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm font-medium text-gray-700">Favicon Yükle</p>
+                          <p className="text-xs text-gray-500 mt-1">ICO, PNG (Önerilen: 32x32px)</p>
+                        </div>
+                      </div>
+                    </div>
+                  </label>
+                )}
+              </div>
+            </div>
+
+            {/* Görüntüleme Ayarları - Ayrı Satır */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center space-x-2">
                   <TrendingUp size={20} />

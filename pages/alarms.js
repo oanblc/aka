@@ -11,7 +11,7 @@ export default function Alarms() {
   // Custom fiyatları filtrele (panelden oluşturulan fiyatlar)
   const prices = websocketPrices.filter(p => p.isCustom === true);
   const {
-    logoBase64, logoHeight, logoWidth,
+    logoBase64, logoHeight, logoWidth, faviconBase64,
     contactPhone, contactEmail,
     socialFacebook, socialTwitter, socialInstagram, socialYoutube, socialWhatsapp
   } = useSettings();
@@ -140,6 +140,7 @@ export default function Alarms() {
       <Head>
         <title>Fiyat Alarmları - NOMANOĞLU</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {faviconBase64 && <link rel="icon" href={faviconBase64} />}
       </Head>
 
       <div className="min-h-screen bg-gray-50">

@@ -8,7 +8,7 @@ import { Menu, Bell, Search, TrendingUp, TrendingDown, DollarSign, Euro, Coins, 
 export default function Home() {
   const { prices: websocketPrices, isConnected, lastUpdate: wsLastUpdate } = useWebSocket();
   const {
-    logoBase64, logoHeight, logoWidth, isLoaded: logoLoaded,
+    logoBase64, logoHeight, logoWidth, faviconBase64, isLoaded: logoLoaded,
     contactPhone, contactEmail, contactAddress, workingHours, workingHoursNote,
     socialFacebook, socialTwitter, socialInstagram, socialYoutube, socialTiktok, socialWhatsapp
   } = useSettings();
@@ -210,6 +210,7 @@ export default function Home() {
         <title>NOMANOĞLU - Canlı Döviz ve Altın Fiyatları</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <meta name="description" content="Anlık altın ve döviz fiyatlarını takip edin. Güvenilir, hızlı ve güncel piyasa verileri." />
+        {faviconBase64 && <link rel="icon" href={faviconBase64} />}
         <style>{`
           @keyframes pulse-gold {
             0%, 100% { opacity: 1; }

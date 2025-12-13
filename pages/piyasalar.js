@@ -8,7 +8,7 @@ import { Menu, Search, TrendingUp, TrendingDown, Star, Maximize2, AlertCircle, P
 export default function Piyasalar() {
   const { prices: websocketPrices, isConnected } = useWebSocket();
   const {
-    logoBase64, logoHeight, logoWidth, isLoaded: logoLoaded,
+    logoBase64, logoHeight, logoWidth, faviconBase64, isLoaded: logoLoaded,
     contactPhone, contactEmail, contactAddress, workingHours,
     socialFacebook, socialTwitter, socialInstagram, socialYoutube, socialWhatsapp
   } = useSettings();
@@ -77,6 +77,7 @@ export default function Piyasalar() {
       <Head>
         <title>Piyasalar - Canlı Döviz ve Altın Fiyatları</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {faviconBase64 && <link rel="icon" href={faviconBase64} />}
         <style>{`
           #price-table-container:fullscreen { background: #fafafa; padding: 1.5rem; }
           #price-table-container:fullscreen .fullscreen-hide { display: none !important; }

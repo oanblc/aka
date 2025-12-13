@@ -19,6 +19,10 @@ const settingsSchema = new mongoose.Schema({
     type: String, // 'auto' veya number string
     default: 'auto'
   },
+  faviconBase64: {
+    type: String,
+    default: ''
+  },
   maxDisplayItems: {
     type: Number,
     default: 20
