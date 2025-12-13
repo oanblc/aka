@@ -1,5 +1,10 @@
+# Force npm install instead of npm ci
+[phases.setup]
+nixPkgs = ["nodejs_18", "npm"]
+
 [phases.install]
-cmds = ["npm install"]
+cmds = ["npm install --legacy-peer-deps"]
+cacheDirectories = []
 
 [start]
 cmd = "npm start"
