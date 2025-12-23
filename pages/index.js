@@ -370,11 +370,14 @@ export default function Home() {
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-          {/* Page Header - Tek Satır */}
-          <div className="mb-6 flex items-baseline gap-3">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Canlı Fiyatlar</h1>
-            <span className="text-sm text-gray-400">•</span>
-            <p className="text-sm text-gray-500">Anlık altın ve döviz kurları</p>
+          {/* Page Header - Modern Tek Satır */}
+          <div className="mb-6 flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-blue-400 rounded-full"></div>
+              <h1 className="text-2xl font-bold text-gray-900">Canlı Fiyatlar</h1>
+            </div>
+            <div className="hidden sm:block h-5 w-px bg-gray-200"></div>
+            <p className="hidden sm:block text-sm text-gray-400 font-medium">Anlık altın ve döviz kurları</p>
           </div>
 
           {/* Filter Bar - Tümü, Favoriler ve Arama */}
