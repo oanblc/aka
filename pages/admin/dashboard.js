@@ -1402,7 +1402,7 @@ export default function AdminDashboard() {
                       <input
                         type="text"
                         value={socialWhatsapp}
-                        onChange={(e) => setSocialWhatsapp(e.target.value)}
+                        onChange={(e) => setSocialWhatsapp(e.target.value.replace(/[^0-9]/g, ''))}
                         placeholder="905XXXXXXXXX"
                         className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                       />
