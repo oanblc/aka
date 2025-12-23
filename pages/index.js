@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useSettings } from '../contexts/SettingsContext';
-import { Menu, Search, TrendingUp, TrendingDown, Star, Maximize2, Phone, Mail, Clock, ChevronRight, X, Bell, ArrowRight, Activity } from 'lucide-react';
+import { Menu, Search, TrendingUp, TrendingDown, Star, Maximize2, Phone, Mail, Clock, ChevronRight, X, Bell, ArrowRight, Activity, LayoutGrid, Coins, DollarSign, Circle } from 'lucide-react';
 
 export default function Home() {
   const { prices: websocketPrices, isConnected, lastUpdate: wsLastUpdate } = useWebSocket();
@@ -29,12 +29,12 @@ export default function Home() {
   const [priceHistory, setPriceHistory] = useState({});
   const [activeCategory, setActiveCategory] = useState('all');
 
-  // Kategoriler
+  // Kategoriler - Lucide ikonları ile
   const categories = [
-    { id: 'all', name: 'Tümü', icon: '📊' },
-    { id: 'gold', name: 'Altın', icon: '🥇' },
-    { id: 'currency', name: 'Döviz', icon: '💱' },
-    { id: 'silver', name: 'Gümüş', icon: '🥈' },
+    { id: 'all', name: 'Tümü', icon: LayoutGrid },
+    { id: 'gold', name: 'Altın', icon: Coins },
+    { id: 'currency', name: 'Döviz', icon: DollarSign },
+    { id: 'silver', name: 'Gümüş', icon: Circle },
   ];
 
   // WebSocket'ten gelen fiyatları güncelle
@@ -391,20 +391,23 @@ export default function Home() {
           {/* Category Tabs */}
           <div className="mb-6 bg-white rounded-xl border border-gray-200 p-2">
             <div className="flex items-center space-x-2 overflow-x-auto pb-1">
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => { setActiveCategory(cat.id); setShowOnlyFavorites(false); }}
-                  className={`flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
-                    activeCategory === cat.id && !showOnlyFavorites
-                      ? 'bg-blue-600 text-white shadow-md'
-                      : 'text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  <span>{cat.icon}</span>
-                  <span>{cat.name}</span>
-                </button>
-              ))}
+              {categories.map((cat) => {
+                const IconComponent = cat.icon;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => { setActiveCategory(cat.id); setShowOnlyFavorites(false); }}
+                    className={`flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
+                      activeCategory === cat.id && !showOnlyFavorites
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <IconComponent size={16} />
+                    <span>{cat.name}</span>
+                  </button>
+                );
+              })}
               <div className="w-px h-8 bg-gray-200 mx-2" />
               <button
                 onClick={() => { setShowOnlyFavorites(true); }}
