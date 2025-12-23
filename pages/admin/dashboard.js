@@ -155,15 +155,22 @@ export default function AdminDashboard() {
   const loadData = async () => {
     try {
       console.log('🔄 Admin Panel - Veri yükleniyor...');
-      const [customRes, settingsRes, branchesRes] = await Promise.all([
+      const [customRes, settingsRes, branchesRes, sourcesRes] = await Promise.all([
         axios.get(`${apiUrl}/api/custom-prices`),
         axios.get(`${apiUrl}/api/settings`),
-        axios.get(`${apiUrl}/api/branches`)
+        axios.get(`${apiUrl}/api/branches`),
+        axios.get(`${apiUrl}/api/prices/sources`)
       ]);
-      
+
       if (customRes.data.success) {
         setCustomPrices(customRes.data.data);
         console.log(`✅ ${customRes.data.data.length} custom fiyat yüklendi`);
+      }
+
+      // Kaynak fiyatları cache'den yükle
+      if (sourcesRes.data.success && sourcesRes.data.data.length > 0) {
+        setSourcePrices(sourcesRes.data.data);
+        console.log(`✅ ${sourcesRes.data.data.length} kaynak fiyat yüklendi (${sourcesRes.data.source})`);
       }
 
       if (settingsRes.data.success) {

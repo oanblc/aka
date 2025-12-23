@@ -2,6 +2,7 @@ const { io: SocketIOClient } = require('socket.io-client');
 const Coefficient = require('../models/Coefficient');
 const PriceHistory = require('../models/PriceHistory');
 const CachedPrices = require('../models/CachedPrices');
+const SourcePriceCache = require('../models/SourcePriceCache');
 
 let currentPrices = {};
 let haremSocket = null;
@@ -383,6 +384,29 @@ const handlePriceData = async (rawData) => {
               console.log(`💾 ${customPrices.length} custom fiyat cache'e kaydedildi`);
             }).catch(err => {
               console.error('❌ Cache kaydetme hatası:', err.message);
+            });
+          }
+
+          // Kaynak (ham) fiyatları da ayrı cache'e kaydet
+          const sourcePrices = processedData.prices.filter(p => !p.isCustom);
+          if (sourcePrices.length > 0) {
+            SourcePriceCache.findOneAndUpdate(
+              { key: 'source_prices' },
+              {
+                key: 'source_prices',
+                prices: sourcePrices.map(p => ({
+                  code: p.code,
+                  name: p.name,
+                  rawAlis: p.rawAlis,
+                  rawSatis: p.rawSatis
+                })),
+                updatedAt: new Date()
+              },
+              { upsert: true, new: true }
+            ).then(() => {
+              console.log(`💾 ${sourcePrices.length} kaynak fiyat cache'e kaydedildi`);
+            }).catch(err => {
+              console.error('❌ Kaynak cache kaydetme hatası:', err.message);
             });
           }
         }

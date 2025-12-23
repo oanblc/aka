@@ -3,6 +3,7 @@ const router = express.Router();
 const { getCurrentPrices } = require('../services/priceService');
 const PriceHistory = require('../models/PriceHistory');
 const CachedPrices = require('../models/CachedPrices');
+const SourcePriceCache = require('../models/SourcePriceCache');
 
 // Mevcut fiyatları getir (ham kaynak fiyatları)
 router.get('/current', (req, res) => {
@@ -19,30 +20,42 @@ router.get('/current', (req, res) => {
 });
 
 // Kaynak fiyatları getir (admin panel için - sadece ham API fiyatları)
-router.get('/sources', (req, res) => {
+router.get('/sources', async (req, res) => {
   try {
+    // Önce memory'deki fiyatları dene
     const prices = getCurrentPrices();
-    // Sadece ham API fiyatlarını döndür (custom fiyatları filtrele)
-    const sourcePrices = prices.filter(p => !p.isCustom).map(p => ({
+    let sourcePrices = prices.filter(p => !p.isCustom).map(p => ({
       code: p.code,
       name: p.name,
       rawAlis: p.rawAlis,
-      rawSatis: p.rawSatis,
-      category: p.category
+      rawSatis: p.rawSatis
     }));
-    
+
+    let source = 'memory';
+
+    // Eğer memory'de yoksa veya boşsa, cache'den al
+    if (sourcePrices.length === 0) {
+      const cached = await SourcePriceCache.findOne({ key: 'source_prices' });
+      if (cached && cached.prices && cached.prices.length > 0) {
+        sourcePrices = cached.prices;
+        source = 'cache';
+        console.log(`📦 Cache'den ${sourcePrices.length} kaynak fiyat yüklendi`);
+      }
+    }
+
     res.json({
       success: true,
       data: sourcePrices,
       lastUpdate: new Date().toISOString(),
-      count: sourcePrices.length
+      count: sourcePrices.length,
+      source
     });
   } catch (error) {
     console.error('Fiyat getirme hatası:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: 'Sunucu hatası',
-      error: error.message 
+      error: error.message
     });
   }
 });
