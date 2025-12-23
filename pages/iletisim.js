@@ -207,9 +207,9 @@ export default function Iletisim() {
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           {/* Page Header */}
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">İletişim & Şubelerimiz</h1>
-            <p className="text-sm text-gray-500 mt-1">Türkiye genelinde {branches.length} şubemizle hizmetinizdeyiz</p>
+          <div className="mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">İletişim & Şubelerimiz</h1>
+            <p className="text-base text-gray-500 mt-2">Türkiye genelinde {branches.length} şubemizle hizmetinizdeyiz</p>
           </div>
 
           {/* Contact Info Cards */}

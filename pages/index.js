@@ -370,22 +370,10 @@ export default function Home() {
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-          {/* Page Header with Stats */}
-          <div className="mb-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Canlı Fiyatlar</h1>
-                <p className="text-sm text-gray-500 mt-1">Anlık altın ve döviz kurları</p>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg border border-gray-200">
-                  <Activity size={16} className="text-blue-500" />
-                  <span className="text-sm font-medium text-gray-700">{prices.length} Ürün</span>
-                </div>
-              </div>
-            </div>
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Canlı Fiyatlar</h1>
+            <p className="text-base text-gray-500 mt-2">Anlık altın ve döviz kurları</p>
           </div>
 
           {/* Category Tabs */}
