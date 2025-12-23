@@ -663,6 +663,15 @@ export default function AdminDashboard() {
                   <span>Ayarlar</span>
                 </div>
               </button>
+              <button
+                onClick={() => router.push("/admin/notifications")}
+                className="px-6 py-4 font-semibold text-sm border-b-2 border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300 transition-colors"
+              >
+                <div className="flex items-center space-x-2">
+                  <AlertCircle size={18} />
+                  <span>Bildirimler</span>
+                </div>
+              </button>
             </nav>
           </div>
         </div>
