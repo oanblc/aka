@@ -19,7 +19,7 @@ export default function AdminLogin() {
 
     try {
       const response = await axios.post(`${apiUrl}/api/auth/login`, { password });
-      
+
       if (response.data.success) {
         localStorage.setItem('adminToken', response.data.token);
         router.push('/admin/dashboard');
@@ -37,20 +37,20 @@ export default function AdminLogin() {
         <title>Admin Giriş - Fiyat Yönetimi</title>
       </Head>
 
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-500 rounded-full mb-4 shadow-lg">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl mb-4 shadow-lg shadow-blue-500/30">
               <TrendingUp size={32} className="text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Paneli</h1>
-            <p className="text-gray-600">Fiyat Yönetim Sistemi</p>
+            <p className="text-gray-500">Fiyat Yönetim Sistemi</p>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-lg">
+          <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Şifre
                 </label>
                 <div className="relative">
@@ -60,7 +60,7 @@ export default function AdminLogin() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Admin şifresini girin"
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:border-yellow-500 focus:outline-none"
+                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     required
                     autoFocus
                   />
@@ -68,7 +68,7 @@ export default function AdminLogin() {
               </div>
 
               {error && (
-                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
                   {error}
                 </div>
               )}
@@ -76,13 +76,20 @@ export default function AdminLogin() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors shadow-md"
+                className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all shadow-md shadow-blue-600/30"
               >
-                {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+                {loading ? (
+                  <span className="flex items-center justify-center space-x-2">
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Giriş yapılıyor...</span>
+                  </span>
+                ) : (
+                  'Giriş Yap'
+                )}
               </button>
             </form>
 
-            <div className="mt-6 text-center text-xs text-gray-500">
+            <div className="mt-6 text-center text-xs text-gray-400">
               Varsayılan şifre: admin123
             </div>
           </div>
@@ -90,7 +97,7 @@ export default function AdminLogin() {
           <div className="mt-6 text-center">
             <button
               onClick={() => router.push('/')}
-              className="text-gray-400 hover:text-white transition-colors text-sm"
+              className="text-gray-500 hover:text-blue-600 transition-colors text-sm font-medium"
             >
               ← Ana Sayfaya Dön
             </button>
@@ -100,4 +107,3 @@ export default function AdminLogin() {
     </>
   );
 }
-

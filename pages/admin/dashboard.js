@@ -538,7 +538,7 @@ export default function AdminDashboard() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-amber-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">Yükleniyor...</p>
         </div>
       </div>
@@ -571,7 +571,7 @@ export default function AdminDashboard() {
                     />
                   ) : (
                     <>
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
                         <TrendingUp className="text-white" size={22} />
                       </div>
                       <div>
@@ -594,7 +594,7 @@ export default function AdminDashboard() {
                   href="/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-2 px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg transition-colors font-medium"
+                  className="flex items-center space-x-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors font-medium"
                   title="Siteye Git"
                 >
                   <ExternalLink size={18} />
@@ -628,7 +628,7 @@ export default function AdminDashboard() {
                 onClick={() => setActiveTab('prices')}
                 className={`px-6 py-4 font-semibold text-sm border-b-2 transition-colors ${
                   activeTab === 'prices'
-                    ? 'border-amber-500 text-amber-600'
+                    ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
                 }`}
               >
@@ -641,7 +641,7 @@ export default function AdminDashboard() {
                 onClick={() => setActiveTab('branches')}
                 className={`px-6 py-4 font-semibold text-sm border-b-2 transition-colors ${
                   activeTab === 'branches'
-                    ? 'border-amber-500 text-amber-600'
+                    ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
                 }`}
               >
@@ -654,7 +654,7 @@ export default function AdminDashboard() {
                 onClick={() => setActiveTab('settings')}
                 className={`px-6 py-4 font-semibold text-sm border-b-2 transition-colors ${
                   activeTab === 'settings'
-                    ? 'border-amber-500 text-amber-600'
+                    ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
                 }`}
               >
@@ -692,8 +692,8 @@ export default function AdminDashboard() {
                   <p className="text-gray-500 text-sm font-medium mb-1">Oluşturulan Fiyatlar</p>
                   <p className="text-3xl font-bold text-gray-900">{customPrices.length}</p>
                 </div>
-                <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-                  <Save className="text-amber-600" size={24} />
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Save className="text-blue-600" size={24} />
                 </div>
               </div>
             </div>
@@ -755,8 +755,8 @@ export default function AdminDashboard() {
                 <button
                   onClick={() => setFilter('all')}
                   className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-                    filter === 'all' 
-                      ? 'bg-amber-500 text-white shadow-md shadow-amber-500/30' 
+                    filter === 'all'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -765,8 +765,8 @@ export default function AdminDashboard() {
                 <button
                   onClick={() => setFilter('altin')}
                   className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-                    filter === 'altin' 
-                      ? 'bg-amber-500 text-white shadow-md shadow-amber-500/30' 
+                    filter === 'altin'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -775,8 +775,8 @@ export default function AdminDashboard() {
                 <button
                   onClick={() => setFilter('doviz')}
                   className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-                    filter === 'doviz' 
-                      ? 'bg-amber-500 text-white shadow-md shadow-amber-500/30' 
+                    filter === 'doviz'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30' 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -786,7 +786,7 @@ export default function AdminDashboard() {
                   onClick={() => setFilter('gumus')}
                   className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                     filter === 'gumus' 
-                      ? 'bg-amber-500 text-white shadow-md shadow-amber-500/30' 
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30' 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -813,7 +813,7 @@ export default function AdminDashboard() {
               <p className="font-semibold text-gray-900 mb-2">💡 Nasıl Çalışır?</p>
               <p className="text-gray-700 mb-1">Yeni fiyat oluştur butonuna tıklayarak özel fiyatlar oluşturabilirsiniz.</p>
               <p className="text-gray-600 mb-1">API'den çekilen fiyatları kaynak olarak kullanarak kendi fiyat yapınızı oluşturun.</p>
-              <p className="text-amber-600 font-semibold flex items-center space-x-1">
+              <p className="text-blue-600 font-semibold flex items-center space-x-1">
                 <GripVertical size={16} />
                 <span>Fiyatları sürükleyerek sıralayabilirsiniz!</span>
               </p>
@@ -830,7 +830,7 @@ export default function AdminDashboard() {
                   <p className="text-sm mb-4">Yeni bir fiyat oluşturarak başlayın</p>
                   <button
                     onClick={openCreateModal}
-                    className="inline-flex items-center space-x-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors font-semibold"
+                    className="inline-flex items-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold"
                   >
                     <Plus size={18} />
                     <span>İlk Fiyatı Oluştur</span>
@@ -870,10 +870,10 @@ export default function AdminDashboard() {
                             isDragging
                               ? 'opacity-50 bg-blue-50'
                               : isDraggedOver
-                                ? 'bg-amber-100 border-l-4 border-l-amber-500'
+                                ? 'bg-blue-100 border-l-4 border-l-blue-500'
                                 : index % 2 === 0
-                                  ? 'bg-white hover:bg-amber-50'
-                                  : 'bg-gray-50/50 hover:bg-amber-50'
+                                  ? 'bg-white hover:bg-blue-50'
+                                  : 'bg-gray-50/50 hover:bg-blue-50'
                           }`}
                           style={{ cursor: 'grab' }}
                         >
@@ -888,7 +888,7 @@ export default function AdminDashboard() {
                               <div className="font-semibold text-gray-900">{price.name}</div>
                               <div className="text-xs text-gray-500">{price.code}</div>
                               <span className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium ${
-                                price.category === 'altin' ? 'bg-amber-100 text-amber-700' :
+                                price.category === 'altin' ? 'bg-blue-100 text-blue-700' :
                                 price.category === 'doviz' ? 'bg-blue-100 text-blue-700' :
                                 'bg-gray-100 text-gray-700'
                               }`}>
@@ -967,7 +967,7 @@ export default function AdminDashboard() {
                 <p className="text-gray-600 mb-4">İletişim sayfasında görünmesi için şube ekleyin</p>
                 <button
                   onClick={openCreateBranchModal}
-                  className="inline-flex items-center space-x-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors font-semibold"
+                  className="inline-flex items-center space-x-2 px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg transition-colors font-semibold"
                 >
                   <Plus size={20} />
                   <span>İlk Şubeyi Ekle</span>
@@ -1128,7 +1128,7 @@ export default function AdminDashboard() {
                               max="120"
                               value={logoHeight}
                               onChange={(e) => setLogoHeight(parseInt(e.target.value) || 48)}
-                              className="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm font-semibold text-gray-900 bg-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+                              className="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm font-semibold text-gray-900 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                             />
                           </div>
                         </div>
@@ -1146,7 +1146,7 @@ export default function AdminDashboard() {
                                   setLogoWidth(200);
                                 }
                               }}
-                              className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm font-medium text-gray-900 bg-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+                              className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm font-medium text-gray-900 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                             >
                               <option value="auto">Otomatik</option>
                               <option value="custom">Özel</option>
@@ -1158,7 +1158,7 @@ export default function AdminDashboard() {
                                 max="400"
                                 value={logoWidth}
                                 onChange={(e) => setLogoWidth(parseInt(e.target.value) || 200)}
-                                className="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm font-semibold text-gray-900 bg-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
+                                className="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm font-semibold text-gray-900 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                               />
                             )}
                           </div>
@@ -1181,7 +1181,7 @@ export default function AdminDashboard() {
                       onChange={handleLogoUpload}
                       className="hidden"
                     />
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-amber-500 hover:bg-amber-50 transition-all">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-blue-500 hover:bg-blue-50 transition-all">
                       <div className="flex flex-col items-center space-y-3">
                         <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
                           <Plus size={32} className="text-gray-400" />
@@ -1246,7 +1246,7 @@ export default function AdminDashboard() {
                       onChange={handleFaviconUpload}
                       className="hidden"
                     />
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-amber-500 hover:bg-amber-50 transition-all">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-blue-500 hover:bg-blue-50 transition-all">
                       <div className="flex flex-col items-center space-y-3">
                         <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
                           <Plus size={24} className="text-gray-400" />
@@ -1284,7 +1284,7 @@ export default function AdminDashboard() {
                       max="100"
                       value={maxDisplayItems}
                       onChange={(e) => setMaxDisplayItems(parseInt(e.target.value) || 20)}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-white text-gray-900 text-center text-2xl font-bold focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-white text-gray-900 text-center text-2xl font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -1307,7 +1307,7 @@ export default function AdminDashboard() {
                       value={contactPhone}
                       onChange={(e) => setContactPhone(e.target.value)}
                       placeholder="+90 (XXX) XXX XX XX"
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
                   <div>
@@ -1317,7 +1317,7 @@ export default function AdminDashboard() {
                       value={contactEmail}
                       onChange={(e) => setContactEmail(e.target.value)}
                       placeholder="info@example.com"
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
                   <div>
@@ -1327,7 +1327,7 @@ export default function AdminDashboard() {
                       value={contactAddress}
                       onChange={(e) => setContactAddress(e.target.value)}
                       placeholder="Istanbul, Turkiye"
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
                   <div>
@@ -1337,7 +1337,7 @@ export default function AdminDashboard() {
                       value={workingHours}
                       onChange={(e) => setWorkingHours(e.target.value)}
                       placeholder="Pzt - Cmt: 09:00 - 19:00"
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
                   <div>
@@ -1347,7 +1347,7 @@ export default function AdminDashboard() {
                       value={workingHoursNote}
                       onChange={(e) => setWorkingHoursNote(e.target.value)}
                       placeholder="Pazar: Kapali"
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -1370,7 +1370,7 @@ export default function AdminDashboard() {
                         value={socialWhatsapp}
                         onChange={(e) => setSocialWhatsapp(e.target.value)}
                         placeholder="905XXXXXXXXX"
-                        className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                        className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                       />
                     </div>
                     <p className="text-xs text-gray-500 mt-1">Ulke kodu ile birlikte (ornek: 905322904601)</p>
@@ -1382,7 +1382,7 @@ export default function AdminDashboard() {
                       value={socialFacebook}
                       onChange={(e) => setSocialFacebook(e.target.value)}
                       placeholder="https://facebook.com/..."
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
                   <div>
@@ -1392,7 +1392,7 @@ export default function AdminDashboard() {
                       value={socialTwitter}
                       onChange={(e) => setSocialTwitter(e.target.value)}
                       placeholder="https://twitter.com/..."
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
                   <div>
@@ -1402,7 +1402,7 @@ export default function AdminDashboard() {
                       value={socialInstagram}
                       onChange={(e) => setSocialInstagram(e.target.value)}
                       placeholder="https://instagram.com/..."
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
                   <div>
@@ -1412,7 +1412,7 @@ export default function AdminDashboard() {
                       value={socialYoutube}
                       onChange={(e) => setSocialYoutube(e.target.value)}
                       placeholder="https://youtube.com/..."
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
                   <div>
@@ -1422,7 +1422,7 @@ export default function AdminDashboard() {
                       value={socialTiktok}
                       onChange={(e) => setSocialTiktok(e.target.value)}
                       placeholder="https://tiktok.com/@..."
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -1471,7 +1471,7 @@ export default function AdminDashboard() {
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
                         placeholder="örn: VIP Dolar"
-                        className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                        className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                       />
                     </div>
                     <div>
@@ -1481,7 +1481,7 @@ export default function AdminDashboard() {
                         value={formData.code}
                         onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
                         placeholder="örn: VIP_USD"
-                        className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                        className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                       />
                     </div>
                     <div>
@@ -1489,7 +1489,7 @@ export default function AdminDashboard() {
                       <select
                         value={formData.category}
                         onChange={(e) => setFormData({...formData, category: e.target.value})}
-                        className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                        className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                       >
                         <option value="doviz">Döviz</option>
                         <option value="altin">Altın</option>
@@ -1659,7 +1659,7 @@ export default function AdminDashboard() {
                       value={branchFormData.name}
                       onChange={(e) => setBranchFormData({...branchFormData, name: e.target.value})}
                       placeholder="örn: Kadirli Şubesi"
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
 
@@ -1670,7 +1670,7 @@ export default function AdminDashboard() {
                       value={branchFormData.city}
                       onChange={(e) => setBranchFormData({...branchFormData, city: e.target.value})}
                       placeholder="örn: Osmaniye"
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -1682,7 +1682,7 @@ export default function AdminDashboard() {
                     onChange={(e) => setBranchFormData({...branchFormData, address: e.target.value})}
                     placeholder="Tam adres..."
                     rows={3}
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                   />
                 </div>
 
@@ -1694,7 +1694,7 @@ export default function AdminDashboard() {
                       value={branchFormData.phone}
                       onChange={(e) => setBranchFormData({...branchFormData, phone: e.target.value})}
                       placeholder="örn: 0850 XXX XX XX"
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
 
@@ -1705,7 +1705,7 @@ export default function AdminDashboard() {
                       value={branchFormData.email}
                       onChange={(e) => setBranchFormData({...branchFormData, email: e.target.value})}
                       placeholder="örn: kadirli@akakuyumculuk.com"
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -1717,7 +1717,7 @@ export default function AdminDashboard() {
                     value={branchFormData.workingHours}
                     onChange={(e) => setBranchFormData({...branchFormData, workingHours: e.target.value})}
                     placeholder="örn: 09:00 - 18:00"
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                   />
                 </div>
 
@@ -1728,7 +1728,7 @@ export default function AdminDashboard() {
                     value={branchFormData.mapLink}
                     onChange={(e) => setBranchFormData({...branchFormData, mapLink: e.target.value})}
                     placeholder="https://maps.google.com/..."
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
                   />
                   <p className="text-xs text-gray-500 mt-1">Google Maps'ten paylaş linkini yapıştırın</p>
                 </div>
