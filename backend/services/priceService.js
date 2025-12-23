@@ -387,24 +387,37 @@ const handlePriceData = async (rawData) => {
             });
           }
 
-          // Kaynak (ham) fiyatları da ayrı cache'e kaydet
-          const sourcePrices = processedData.prices.filter(p => !p.isCustom);
-          if (sourcePrices.length > 0) {
-            SourcePriceCache.findOneAndUpdate(
-              { key: 'source_prices' },
-              {
-                key: 'source_prices',
-                prices: sourcePrices.map(p => ({
+          // Kaynak (ham) fiyatları da ayrı cache'e kaydet - merge mantığı ile
+          const newSourcePrices = processedData.prices.filter(p => !p.isCustom);
+          if (newSourcePrices.length > 0) {
+            // Önce mevcut cache'i al
+            SourcePriceCache.findOne({ key: 'source_prices' }).then(cached => {
+              const existingPrices = cached?.prices || [];
+              const priceMap = new Map(existingPrices.map(p => [p.code, p]));
+
+              // Yeni fiyatları ekle veya güncelle
+              newSourcePrices.forEach(p => {
+                priceMap.set(p.code, {
                   code: p.code,
                   name: p.name,
                   rawAlis: p.rawAlis,
                   rawSatis: p.rawSatis
-                })),
-                updatedAt: new Date()
-              },
-              { upsert: true, new: true }
-            ).then(() => {
-              console.log(`💾 ${sourcePrices.length} kaynak fiyat cache'e kaydedildi`);
+                });
+              });
+
+              const mergedPrices = Array.from(priceMap.values());
+
+              return SourcePriceCache.findOneAndUpdate(
+                { key: 'source_prices' },
+                {
+                  key: 'source_prices',
+                  prices: mergedPrices,
+                  updatedAt: new Date()
+                },
+                { upsert: true, new: true }
+              );
+            }).then((result) => {
+              console.log(`💾 ${result?.prices?.length || 0} kaynak fiyat cache'e kaydedildi (merge)`);
             }).catch(err => {
               console.error('❌ Kaynak cache kaydetme hatası:', err.message);
             });
