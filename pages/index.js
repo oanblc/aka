@@ -376,59 +376,53 @@ export default function Home() {
             <p className="text-base text-gray-500 mt-2">Anlık altın ve döviz kurları</p>
           </div>
 
-          {/* Category Tabs */}
+          {/* Filter Bar - Tümü, Favoriler ve Arama */}
           <div className="mb-6 bg-white rounded-xl border border-gray-200 p-2">
-            <div className="flex items-center space-x-2 overflow-x-auto pb-1">
-              {categories.map((cat) => {
-                const IconComponent = cat.icon;
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => { setActiveCategory(cat.id); setShowOnlyFavorites(false); }}
-                    className={`flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
-                      activeCategory === cat.id && !showOnlyFavorites
-                        ? 'bg-blue-600 text-white shadow-md'
-                        : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                  >
-                    <IconComponent size={16} />
-                    <span>{cat.name}</span>
-                  </button>
-                );
-              })}
-              <div className="w-px h-8 bg-gray-200 mx-2" />
-              <button
-                onClick={() => { setShowOnlyFavorites(true); }}
-                className={`flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
-                  showOnlyFavorites
-                    ? 'bg-yellow-500 text-white shadow-md'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <Star size={16} className={showOnlyFavorites || favorites.length > 0 ? 'fill-current' : ''} />
-                <span>Favoriler</span>
-                {favorites.length > 0 && (
-                  <span className={`px-1.5 py-0.5 text-xs rounded-full ${
-                    showOnlyFavorites ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    {favorites.length}
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
+            <div className="flex items-center justify-between gap-4">
+              {/* Sol: Tümü ve Favoriler */}
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => { setShowOnlyFavorites(false); setActiveCategory('all'); }}
+                  className={`flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
+                    !showOnlyFavorites
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <LayoutGrid size={16} />
+                  <span>Tümü</span>
+                </button>
+                <button
+                  onClick={() => { setShowOnlyFavorites(true); }}
+                  className={`flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
+                    showOnlyFavorites
+                      ? 'bg-yellow-500 text-white shadow-md'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Star size={16} className={showOnlyFavorites || favorites.length > 0 ? 'fill-current' : ''} />
+                  <span>Favoriler</span>
+                  {favorites.length > 0 && (
+                    <span className={`px-1.5 py-0.5 text-xs rounded-full ${
+                      showOnlyFavorites ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      {favorites.length}
+                    </span>
+                  )}
+                </button>
+              </div>
 
-          {/* Search Bar */}
-          <div className="mb-6">
-            <div className="relative max-w-md">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input
-                type="text"
-                placeholder="Ürün ara..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              />
+              {/* Sağ: Arama */}
+              <div className="relative flex-1 max-w-xs">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                <input
+                  type="text"
+                  placeholder="Ürün ara..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2.5 bg-gray-100 border-0 rounded-lg text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                />
+              </div>
             </div>
           </div>
 
