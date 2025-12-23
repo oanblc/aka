@@ -397,14 +397,20 @@ export default function Piyasalar() {
               </div>
             ) : (
               <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                {/* Table Header */}
-                <div className="grid grid-cols-12 gap-2 px-4 sm:px-6 py-3 bg-gray-50 border-b border-gray-200">
-                  <div className="col-span-4 sm:col-span-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ürün</div>
-                  <div className="col-span-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:block">Trend</div>
-                  <div className="col-span-3 sm:col-span-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Alış</div>
-                  <div className="col-span-3 sm:col-span-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Satış</div>
-                  <div className="col-span-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:block">Değişim</div>
-                  <div className="col-span-2 sm:col-span-1"></div>
+                {/* Table Header - Desktop */}
+                <div className="hidden sm:grid grid-cols-12 gap-2 px-6 py-3 bg-gray-50 border-b border-gray-200">
+                  <div className="col-span-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ürün</div>
+                  <div className="col-span-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Trend</div>
+                  <div className="col-span-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Alış</div>
+                  <div className="col-span-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Satış</div>
+                  <div className="col-span-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Değişim</div>
+                  <div className="col-span-1"></div>
+                </div>
+
+                {/* Mobile Header */}
+                <div className="sm:hidden flex items-center justify-between px-4 py-2 bg-gray-50 border-b border-gray-200">
+                  <span className="text-xs font-semibold text-gray-500 uppercase">Ürün</span>
+                  <span className="text-xs font-semibold text-gray-500 uppercase">Alış / Satış</span>
                 </div>
 
                 {/* Table Body */}
@@ -421,81 +427,102 @@ export default function Piyasalar() {
                     return (
                       <div
                         key={price.code}
-                        className={`grid grid-cols-12 gap-2 px-4 sm:px-6 py-3 items-center transition-all duration-300 cursor-pointer group
-                          ${isUp ? 'bg-green-50' : isDown ? 'bg-red-50' : 'hover:bg-gray-50'}
-                        `}
+                        className={`transition-all duration-300 cursor-pointer group ${isUp ? 'bg-green-50' : isDown ? 'bg-red-50' : 'hover:bg-gray-50'}`}
                       >
-                        {/* Product */}
-                        <div className="col-span-4 sm:col-span-3">
-                          <div className="flex items-center space-x-3">
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
-                                {price.name}
-                              </p>
-                              <p className="text-xs text-gray-400 truncate">{price.code}</p>
+                        {/* Desktop Layout */}
+                        <div className="hidden sm:grid grid-cols-12 gap-2 px-6 py-3 items-center">
+                          {/* Product */}
+                          <div className="col-span-3">
+                            <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                              {price.name}
+                            </p>
+                            <p className="text-xs text-gray-400 truncate">{price.code}</p>
+                          </div>
+
+                          {/* Mini Sparkline */}
+                          <div className="col-span-2 flex justify-end items-center">
+                            {history?.prices && <MiniSparkline data={history.prices} isUp={trendUp} />}
+                          </div>
+
+                          {/* Buy Price */}
+                          <div className="col-span-2 text-right">
+                            <div className="flex items-center justify-end space-x-1">
+                              {isUp && <TrendingUp size={12} className="text-green-600" />}
+                              {isDown && <TrendingDown size={12} className="text-red-600" />}
+                              <span className={`text-sm font-semibold tabular-nums ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-gray-900'}`}>
+                                {formatPrice(price.calculatedAlis)}
+                              </span>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Mini Sparkline - Desktop */}
-                        <div className="col-span-2 hidden sm:flex justify-end items-center">
-                          {history?.prices && (
-                            <MiniSparkline data={history.prices} isUp={trendUp} />
-                          )}
-                        </div>
+                          {/* Sell Price */}
+                          <div className="col-span-2 text-right">
+                            <div className="flex items-center justify-end space-x-1">
+                              {isUp && <TrendingUp size={12} className="text-green-600" />}
+                              {isDown && <TrendingDown size={12} className="text-red-600" />}
+                              <span className={`text-sm font-semibold tabular-nums ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-gray-900'}`}>
+                                {formatPrice(price.calculatedSatis)}
+                              </span>
+                            </div>
+                          </div>
 
-                        {/* Buy Price */}
-                        <div className="col-span-3 sm:col-span-2 text-right">
-                          <div className="flex items-center justify-end space-x-1">
-                            {isUp && <TrendingUp size={12} className="text-green-600 flex-shrink-0" />}
-                            {isDown && <TrendingDown size={12} className="text-red-600 flex-shrink-0" />}
-                            <span className={`text-sm font-semibold tabular-nums ${
-                              isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-gray-900'
-                            }`}>
-                              {formatPrice(price.calculatedAlis)}
-                            </span>
+                          {/* Spread Percentage */}
+                          <div className="col-span-2 text-right">
+                            {spreadPercent !== null ? (
+                              <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700">
+                                %{spreadPercent.toFixed(2)}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-gray-400">-</span>
+                            )}
+                          </div>
+
+                          {/* Favorite */}
+                          <div className="col-span-1 flex justify-end">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); toggleFavorite(price.code); }}
+                              className="p-2 rounded-lg hover:bg-gray-100 transition-all hover:scale-110"
+                            >
+                              <Star size={18} className={`transition-all ${isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300 group-hover:text-gray-400'}`} />
+                            </button>
                           </div>
                         </div>
 
-                        {/* Sell Price */}
-                        <div className="col-span-3 sm:col-span-2 text-right">
-                          <div className="flex items-center justify-end space-x-1">
-                            {isUp && <TrendingUp size={12} className="text-green-600 flex-shrink-0" />}
-                            {isDown && <TrendingDown size={12} className="text-red-600 flex-shrink-0" />}
-                            <span className={`text-sm font-semibold tabular-nums ${
-                              isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-gray-900'
-                            }`}>
-                              {formatPrice(price.calculatedSatis)}
-                            </span>
+                        {/* Mobile Layout */}
+                        <div className="sm:hidden flex items-center justify-between px-4 py-3">
+                          {/* Left: Product Name + Favorite */}
+                          <div className="flex items-center space-x-2 min-w-0 flex-1">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); toggleFavorite(price.code); }}
+                              className="p-1 flex-shrink-0"
+                            >
+                              <Star size={16} className={`${isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                            </button>
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-gray-900 truncate">
+                                {price.name}
+                              </p>
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Spread Percentage - Desktop */}
-                        <div className="col-span-2 text-right hidden sm:block">
-                          {spreadPercent !== null ? (
-                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700">
-                              %{spreadPercent.toFixed(2)}
-                            </span>
-                          ) : (
-                            <span className="text-xs text-gray-400">-</span>
-                          )}
-                        </div>
-
-                        {/* Favorite */}
-                        <div className="col-span-2 sm:col-span-1 flex justify-end">
-                          <button
-                            onClick={(e) => { e.stopPropagation(); toggleFavorite(price.code); }}
-                            className="p-2 rounded-lg hover:bg-gray-100 transition-all hover:scale-110"
-                          >
-                            <Star
-                              size={18}
-                              className={`transition-all ${
-                                isFavorite
-                                  ? 'fill-yellow-400 text-yellow-400'
-                                  : 'text-gray-300 group-hover:text-gray-400'
-                              }`}
-                            />
-                          </button>
+                          {/* Right: Prices */}
+                          <div className="flex items-center space-x-3 flex-shrink-0">
+                            {/* Change indicator */}
+                            {(isUp || isDown) && (
+                              <div className={`flex-shrink-0 ${isUp ? 'text-green-600' : 'text-red-600'}`}>
+                                {isUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+                              </div>
+                            )}
+                            {/* Prices Column */}
+                            <div className="text-right">
+                              <div className={`text-xs font-medium tabular-nums ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-gray-500'}`}>
+                                {formatPrice(price.calculatedAlis)}
+                              </div>
+                              <div className={`text-sm font-bold tabular-nums ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-gray-900'}`}>
+                                {formatPrice(price.calculatedSatis)}
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     );
