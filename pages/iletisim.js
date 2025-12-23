@@ -109,10 +109,10 @@ export default function Iletisim() {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </Head>
 
-      <div className="min-h-screen bg-white" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-        {/* Header - Midas Style */}
-        <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="min-h-screen bg-gray-50" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+        {/* Header */}
+        <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between h-16">
               {/* Logo */}
               <Link href="/" className="flex items-center">
@@ -132,37 +132,37 @@ export default function Iletisim() {
               </Link>
 
               {/* Desktop Navigation */}
-              <nav className="hidden md:flex items-center space-x-8">
-                <Link href="/" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+              <nav className="hidden md:flex items-center space-x-1">
+                <Link href="/" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                   Fiyatlar
                 </Link>
-                <Link href="/piyasalar" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                <Link href="/piyasalar" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                   Piyasalar
                 </Link>
-                <Link href="/alarms" className="relative text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                <Link href="/alarms" className="relative px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                   Alarmlar
                   {activeAlarmsCount > 0 && (
-                    <span className="absolute -top-2 -right-4 w-5 h-5 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
                       {activeAlarmsCount}
                     </span>
                   )}
                 </Link>
-                <Link href="/iletisim" className="text-sm font-medium text-blue-600">
+                <Link href="/iletisim" className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg">
                   İletişim
                 </Link>
               </nav>
 
               {/* Right Side */}
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
                 {/* WhatsApp */}
                 {socialWhatsapp && (
                   <a
                     href={`https://wa.me/${socialWhatsapp}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hidden sm:flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                    className="hidden sm:flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all hover:shadow-lg"
                   >
-                    <span>İletişim</span>
+                    <span>WhatsApp</span>
                     <ArrowRight size={16} />
                   </a>
                 )}
@@ -170,7 +170,7 @@ export default function Iletisim() {
                 {/* Mobile Menu */}
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="md:hidden p-2 text-gray-600 hover:text-gray-900"
+                  className="md:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
                 >
                   {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
@@ -190,7 +190,7 @@ export default function Iletisim() {
                   <Link href="/alarms" className="px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg flex items-center justify-between">
                     <span>Alarmlar</span>
                     {activeAlarmsCount > 0 && (
-                      <span className="px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">
+                      <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
                         {activeAlarmsCount}
                       </span>
                     )}
@@ -205,45 +205,45 @@ export default function Iletisim() {
         </header>
 
         {/* Main Content */}
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">İletişim & Şubelerimiz</h1>
-            <p className="text-gray-500">Türkiye genelinde {branches.length} şubemizle hizmetinizdeyiz</p>
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">İletişim & Şubelerimiz</h1>
+            <p className="text-sm text-gray-500 mt-1">Türkiye genelinde {branches.length} şubemizle hizmetinizdeyiz</p>
           </div>
 
           {/* Contact Info Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             {contactPhone && (
-              <a href={`tel:${contactPhone}`} className="bg-gray-50 rounded-2xl p-5 hover:bg-gray-100 transition-colors group">
+              <a href={`tel:${contactPhone}`} className="bg-white rounded-2xl border border-gray-200 p-5 hover:border-blue-200 hover:shadow-md transition-all group">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                     <Phone size={22} className="text-blue-600" />
                   </div>
                   <div>
                     <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Telefon</p>
-                    <p className="text-sm font-semibold text-gray-900">{contactPhone}</p>
+                    <p className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{contactPhone}</p>
                   </div>
                 </div>
               </a>
             )}
 
             {contactEmail && (
-              <a href={`mailto:${contactEmail}`} className="bg-gray-50 rounded-2xl p-5 hover:bg-gray-100 transition-colors group">
+              <a href={`mailto:${contactEmail}`} className="bg-white rounded-2xl border border-gray-200 p-5 hover:border-blue-200 hover:shadow-md transition-all group">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                     <Mail size={22} className="text-blue-600" />
                   </div>
                   <div>
                     <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">E-posta</p>
-                    <p className="text-sm font-semibold text-gray-900">{contactEmail}</p>
+                    <p className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{contactEmail}</p>
                   </div>
                 </div>
               </a>
             )}
 
             {workingHours && (
-              <div className="bg-gray-50 rounded-2xl p-5">
+              <div className="bg-white rounded-2xl border border-gray-200 p-5">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                     <Clock size={22} className="text-blue-600" />
@@ -258,7 +258,7 @@ export default function Iletisim() {
           </div>
 
           {/* Branches Section */}
-          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-8">
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-6 shadow-sm">
             {/* Header with Search and Filter */}
             <div className="px-6 py-5 border-b border-gray-100">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -279,7 +279,7 @@ export default function Iletisim() {
                     placeholder="Şube ara..."
                     value={branchSearch}
                     onChange={(e) => setBranchSearch(e.target.value)}
-                    className="w-full sm:w-56 pl-9 pr-4 py-2 bg-gray-100 border-0 rounded-lg text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full sm:w-56 pl-9 pr-4 py-2.5 bg-gray-100 border-0 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -288,9 +288,9 @@ export default function Iletisim() {
                 <div className="flex items-center space-x-2 overflow-x-auto mt-4 pb-1">
                   <button
                     onClick={() => setSelectedCity('all')}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors ${
+                    className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
                       selectedCity === 'all'
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-blue-600 text-white shadow-md'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
@@ -300,9 +300,9 @@ export default function Iletisim() {
                     <button
                       key={city}
                       onClick={() => setSelectedCity(city)}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors ${
+                      className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
                         selectedCity === city
-                          ? 'bg-blue-600 text-white'
+                          ? 'bg-blue-600 text-white shadow-md'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
@@ -317,7 +317,7 @@ export default function Iletisim() {
             <div className="max-h-[500px] overflow-y-auto">
               {filteredBranches.length === 0 ? (
                 <div className="p-12 text-center">
-                  <Building2 size={40} className="mx-auto text-gray-300 mb-4" />
+                  <Building2 size={48} className="mx-auto text-gray-300 mb-4" />
                   <p className="text-gray-500 text-sm">
                     {branchSearch ? 'Aramanızla eşleşen şube bulunamadı.' : 'Henüz şube eklenmedi.'}
                   </p>
@@ -332,11 +332,11 @@ export default function Iletisim() {
                         className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors text-left"
                       >
                         <div className="flex items-center space-x-4 flex-1 min-w-0">
-                          <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                            <MapPin size={18} className="text-gray-500" />
+                          <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors">
+                            <MapPin size={18} className="text-gray-500 group-hover:text-blue-600 transition-colors" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h3 className="font-medium text-gray-900 text-sm truncate">{branch.name}</h3>
+                            <h3 className="font-medium text-gray-900 text-sm truncate group-hover:text-blue-600 transition-colors">{branch.name}</h3>
                             <p className="text-xs text-gray-500">{branch.city}</p>
                           </div>
                         </div>
@@ -440,7 +440,7 @@ export default function Iletisim() {
           </div>
 
           {/* Contact Form */}
-          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-8">
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
             <div className="px-6 py-5 border-b border-gray-100">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -570,7 +570,7 @@ export default function Iletisim() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+                className="w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all hover:shadow-lg"
               >
                 {isSubmitting ? (
                   <>
@@ -589,8 +589,8 @@ export default function Iletisim() {
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-gray-100 mt-12">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <footer className="border-t border-gray-200 mt-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
             <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
               <div className="flex items-center space-x-2">
                 {logoBase64 ? (
@@ -605,10 +605,10 @@ export default function Iletisim() {
               </div>
 
               <nav className="flex items-center space-x-6">
-                <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">Fiyatlar</Link>
-                <Link href="/piyasalar" className="text-sm text-gray-500 hover:text-gray-900">Piyasalar</Link>
-                <Link href="/alarms" className="text-sm text-gray-500 hover:text-gray-900">Alarmlar</Link>
-                <Link href="/iletisim" className="text-sm text-gray-500 hover:text-gray-900">İletişim</Link>
+                <Link href="/" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Fiyatlar</Link>
+                <Link href="/piyasalar" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Piyasalar</Link>
+                <Link href="/alarms" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Alarmlar</Link>
+                <Link href="/iletisim" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">İletişim</Link>
               </nav>
 
               <p className="text-xs text-gray-400">
@@ -623,6 +623,25 @@ export default function Iletisim() {
         * {
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
+        }
+
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
         }
       `}</style>
     </>

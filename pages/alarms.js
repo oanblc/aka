@@ -3,10 +3,10 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useSettings } from '../contexts/SettingsContext';
-import { Menu, Plus, Trash2, Bell, TrendingUp, TrendingDown, CheckCircle, X, ArrowRight } from 'lucide-react';
+import { Menu, Plus, Trash2, Bell, TrendingUp, TrendingDown, CheckCircle, X, ArrowRight, Activity } from 'lucide-react';
 
 export default function Alarms() {
-  const { prices: websocketPrices } = useWebSocket();
+  const { prices: websocketPrices, isConnected } = useWebSocket();
 
   // Custom fiyatları filtrele (panelden oluşturulan fiyatlar)
   const prices = websocketPrices.filter(p => p.isCustom === true);
@@ -18,6 +18,7 @@ export default function Alarms() {
   const [showModal, setShowModal] = useState(false);
   const [triggeredAlarms, setTriggeredAlarms] = useState([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [timeSinceUpdate, setTimeSinceUpdate] = useState('');
 
   const [formData, setFormData] = useState({
     productCode: '',
@@ -143,10 +144,10 @@ export default function Alarms() {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </Head>
 
-      <div className="min-h-screen bg-white" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-        {/* Header - Midas Style */}
-        <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="min-h-screen bg-gray-50" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+        {/* Header */}
+        <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between h-16">
               {/* Logo */}
               <Link href="/" className="flex items-center">
@@ -166,35 +167,43 @@ export default function Alarms() {
               </Link>
 
               {/* Desktop Navigation */}
-              <nav className="hidden md:flex items-center space-x-8">
-                <Link href="/" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+              <nav className="hidden md:flex items-center space-x-1">
+                <Link href="/" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                   Fiyatlar
                 </Link>
-                <Link href="/piyasalar" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                <Link href="/piyasalar" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                   Piyasalar
                 </Link>
-                <Link href="/alarms" className="relative text-sm font-medium text-blue-600">
+                <Link href="/alarms" className="relative px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg">
                   Alarmlar
                   {activeAlarms.length > 0 && (
-                    <span className="absolute -top-2 -right-4 w-5 h-5 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
                       {activeAlarms.length}
                     </span>
                   )}
                 </Link>
-                <Link href="/iletisim" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                <Link href="/iletisim" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                   İletişim
                 </Link>
               </nav>
 
               {/* Right Side */}
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
+                {/* Connection Status */}
+                <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 bg-gray-100 rounded-full">
+                  <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                  <span className="text-xs font-medium text-gray-600">
+                    {isConnected ? 'Canlı' : 'Bağlanıyor...'}
+                  </span>
+                </div>
+
                 {/* WhatsApp */}
                 {socialWhatsapp && (
                   <a
                     href={`https://wa.me/${socialWhatsapp}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hidden sm:flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                    className="hidden sm:flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all hover:shadow-lg"
                   >
                     <span>İletişim</span>
                     <ArrowRight size={16} />
@@ -204,7 +213,7 @@ export default function Alarms() {
                 {/* Mobile Menu */}
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="md:hidden p-2 text-gray-600 hover:text-gray-900"
+                  className="md:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
                 >
                   {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
@@ -224,7 +233,7 @@ export default function Alarms() {
                   <Link href="/alarms" className="px-4 py-3 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg flex items-center justify-between">
                     <span>Alarmlar</span>
                     {activeAlarms.length > 0 && (
-                      <span className="px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">
+                      <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
                         {activeAlarms.length}
                       </span>
                     )}
@@ -239,16 +248,16 @@ export default function Alarms() {
         </header>
 
         {/* Main Content */}
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           {/* Page Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Fiyat Alarmları</h1>
-              <p className="text-gray-500">İstediğiniz fiyat seviyesine ulaşıldığında bildirim alın</p>
+              <h1 className="text-2xl font-bold text-gray-900">Fiyat Alarmları</h1>
+              <p className="text-sm text-gray-500 mt-1">İstediğiniz fiyat seviyesine ulaşıldığında bildirim alın</p>
             </div>
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center justify-center space-x-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+              className="flex items-center justify-center space-x-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all hover:shadow-lg"
             >
               <Plus size={18} />
               <span>Yeni Alarm</span>
@@ -256,8 +265,8 @@ export default function Alarms() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="bg-gray-50 rounded-2xl p-5">
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Aktif</p>
@@ -269,7 +278,7 @@ export default function Alarms() {
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-2xl p-5">
+            <div className="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Tetiklenen</p>
@@ -281,14 +290,14 @@ export default function Alarms() {
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-2xl p-5">
+            <div className="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Toplam</p>
                   <p className="text-2xl font-bold text-gray-900">{alarms.length}</p>
                 </div>
-                <div className="w-10 h-10 bg-gray-200 rounded-xl flex items-center justify-center">
-                  <Bell size={20} className="text-gray-600" />
+                <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+                  <Activity size={20} className="text-gray-600" />
                 </div>
               </div>
             </div>
@@ -296,7 +305,7 @@ export default function Alarms() {
 
           {/* Triggered Alarms Notification */}
           {triggeredAlarms.length > 0 && (
-            <div className="mb-8 bg-green-50 border border-green-200 rounded-2xl p-5">
+            <div className="mb-6 bg-green-50 border border-green-200 rounded-2xl p-5">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <h3 className="text-sm font-semibold text-green-900 mb-3 flex items-center space-x-2">
@@ -333,12 +342,12 @@ export default function Alarms() {
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Aktif Alarmlar</h2>
             {activeAlarms.length === 0 ? (
-              <div className="bg-gray-50 rounded-2xl p-12 text-center">
-                <Bell size={40} className="mx-auto text-gray-300 mb-4" />
+              <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
+                <Bell size={48} className="mx-auto text-gray-300 mb-4" />
                 <p className="text-gray-500 text-sm mb-4">Henüz aktif alarm yok</p>
                 <button
                   onClick={() => setShowModal(true)}
-                  className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg"
+                  className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <Plus size={16} />
                   <span>İlk Alarmı Oluştur</span>
@@ -353,10 +362,10 @@ export default function Alarms() {
                     : 0;
 
                   return (
-                    <div key={alarm.id} className="bg-white rounded-2xl p-5 border border-gray-200 hover:border-blue-200 transition-colors">
+                    <div key={alarm.id} className="bg-white rounded-2xl p-5 border border-gray-200 hover:border-blue-200 hover:shadow-md transition-all group">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{getProductName(alarm.productCode)}</h3>
+                          <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{getProductName(alarm.productCode)}</h3>
                           <p className="text-xs text-gray-400">{alarm.productCode}</p>
                         </div>
                         <button
@@ -420,7 +429,7 @@ export default function Alarms() {
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Tetiklenmiş Alarmlar</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {pastAlarms.map(alarm => (
-                  <div key={alarm.id} className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                  <div key={alarm.id} className="bg-white rounded-2xl p-5 border border-gray-200 opacity-75">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-600">{getProductName(alarm.productCode)}</h3>
@@ -456,7 +465,7 @@ export default function Alarms() {
         {/* Add Alarm Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden">
+            <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl">
               <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">Yeni Alarm Oluştur</h2>
                 <button
@@ -489,9 +498,9 @@ export default function Alarms() {
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setFormData({...formData, priceType: 'alis'})}
-                      className={`px-4 py-2.5 rounded-lg font-medium text-sm transition-colors ${
+                      className={`px-4 py-2.5 rounded-lg font-medium text-sm transition-all ${
                         formData.priceType === 'alis'
-                          ? 'bg-blue-600 text-white'
+                          ? 'bg-blue-600 text-white shadow-md'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
@@ -499,9 +508,9 @@ export default function Alarms() {
                     </button>
                     <button
                       onClick={() => setFormData({...formData, priceType: 'satis'})}
-                      className={`px-4 py-2.5 rounded-lg font-medium text-sm transition-colors ${
+                      className={`px-4 py-2.5 rounded-lg font-medium text-sm transition-all ${
                         formData.priceType === 'satis'
-                          ? 'bg-blue-600 text-white'
+                          ? 'bg-blue-600 text-white shadow-md'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
@@ -515,9 +524,9 @@ export default function Alarms() {
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setFormData({...formData, condition: 'above'})}
-                      className={`px-4 py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center justify-center space-x-2 ${
+                      className={`px-4 py-2.5 rounded-lg font-medium text-sm transition-all flex items-center justify-center space-x-2 ${
                         formData.condition === 'above'
-                          ? 'bg-green-600 text-white'
+                          ? 'bg-green-600 text-white shadow-md'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
@@ -526,9 +535,9 @@ export default function Alarms() {
                     </button>
                     <button
                       onClick={() => setFormData({...formData, condition: 'below'})}
-                      className={`px-4 py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center justify-center space-x-2 ${
+                      className={`px-4 py-2.5 rounded-lg font-medium text-sm transition-all flex items-center justify-center space-x-2 ${
                         formData.condition === 'below'
-                          ? 'bg-red-600 text-white'
+                          ? 'bg-red-600 text-white shadow-md'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
@@ -571,7 +580,7 @@ export default function Alarms() {
                 </button>
                 <button
                   onClick={handleAddAlarm}
-                  className="flex items-center space-x-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                  className="flex items-center space-x-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all hover:shadow-lg"
                 >
                   <Bell size={16} />
                   <span>Alarm Oluştur</span>
@@ -582,8 +591,8 @@ export default function Alarms() {
         )}
 
         {/* Footer */}
-        <footer className="border-t border-gray-100 mt-12">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <footer className="border-t border-gray-200 mt-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
             <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
               <div className="flex items-center space-x-2">
                 {logoBase64 ? (
@@ -598,10 +607,10 @@ export default function Alarms() {
               </div>
 
               <nav className="flex items-center space-x-6">
-                <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">Fiyatlar</Link>
-                <Link href="/piyasalar" className="text-sm text-gray-500 hover:text-gray-900">Piyasalar</Link>
-                <Link href="/alarms" className="text-sm text-gray-500 hover:text-gray-900">Alarmlar</Link>
-                <Link href="/iletisim" className="text-sm text-gray-500 hover:text-gray-900">İletişim</Link>
+                <Link href="/" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Fiyatlar</Link>
+                <Link href="/piyasalar" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Piyasalar</Link>
+                <Link href="/alarms" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Alarmlar</Link>
+                <Link href="/iletisim" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">İletişim</Link>
               </nav>
 
               <p className="text-xs text-gray-400">
@@ -616,6 +625,25 @@ export default function Alarms() {
         * {
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
+        }
+
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
         }
       `}</style>
     </>

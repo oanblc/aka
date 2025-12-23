@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useSettings } from '../contexts/SettingsContext';
-import { Menu, Search, TrendingUp, TrendingDown, Star, Maximize2, X, ArrowRight } from 'lucide-react';
+import { Menu, Search, TrendingUp, TrendingDown, Star, Maximize2, X, ArrowRight, Activity, LayoutGrid, Coins, DollarSign, Circle } from 'lucide-react';
 
 export default function Piyasalar() {
   const { prices: websocketPrices, isConnected } = useWebSocket();
@@ -11,7 +11,6 @@ export default function Piyasalar() {
     logoBase64, logoHeight, logoWidth, faviconBase64, isLoaded: logoLoaded,
     contactPhone, contactEmail, socialWhatsapp
   } = useSettings();
-  const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [mounted, setMounted] = useState(false);
   const [favorites, setFavorites] = useState([]);
@@ -19,18 +18,64 @@ export default function Piyasalar() {
   const [activeAlarmsCount, setActiveAlarmsCount] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [priceChanges, setPriceChanges] = useState({});
+  const [priceHistory, setPriceHistory] = useState({});
+  const [activeCategory, setActiveCategory] = useState('all');
   const previousPricesRef = useRef([]);
+  const [timeSinceUpdate, setTimeSinceUpdate] = useState('');
+  const [lastUpdate, setLastUpdate] = useState(null);
 
   // Custom fiyatları filtrele (panelden oluşturulan fiyatlar)
   const prices = websocketPrices.filter(p => p.isCustom === true);
+
+  // Kategoriler - Lucide ikonları ile
+  const categories = [
+    { id: 'all', name: 'Tümü', icon: LayoutGrid },
+    { id: 'gold', name: 'Altın', icon: Coins },
+    { id: 'currency', name: 'Döviz', icon: DollarSign },
+    { id: 'silver', name: 'Gümüş', icon: Circle },
+  ];
+
+  // Kategori tespiti
+  const getCategoryFromPrice = (price) => {
+    const code = price.code?.toLowerCase() || '';
+    const name = price.name?.toLowerCase() || '';
+
+    if (code.includes('usd') || code.includes('eur') || code.includes('gbp') ||
+        name.includes('dolar') || name.includes('euro') || name.includes('sterlin')) {
+      return 'currency';
+    }
+    if (code.includes('gumus') || name.includes('gümüş') || name.includes('silver')) {
+      return 'silver';
+    }
+    return 'gold';
+  };
 
   // Fiyat değişikliklerini takip et
   useEffect(() => {
     if (prices.length === 0) return;
 
     const newChanges = {};
+    const newHistory = { ...priceHistory };
+
     prices.forEach(newPrice => {
       const oldPrice = previousPricesRef.current.find(p => p.code === newPrice.code);
+
+      // Fiyat geçmişi kaydet
+      if (!newHistory[newPrice.code]) {
+        newHistory[newPrice.code] = {
+          prices: [],
+          openPrice: newPrice.calculatedSatis,
+          lastPrice: newPrice.calculatedSatis
+        };
+      }
+
+      const history = newHistory[newPrice.code];
+      history.prices.push(newPrice.calculatedSatis);
+      if (history.prices.length > 24) {
+        history.prices.shift();
+      }
+      history.lastPrice = newPrice.calculatedSatis;
+
       if (oldPrice) {
         if (newPrice.calculatedAlis > oldPrice.calculatedAlis || newPrice.calculatedSatis > oldPrice.calculatedSatis) {
           newChanges[newPrice.code] = 'up';
@@ -39,6 +84,9 @@ export default function Piyasalar() {
         }
       }
     });
+
+    setPriceHistory(newHistory);
+    setLastUpdate(new Date());
 
     if (Object.keys(newChanges).length > 0) {
       setPriceChanges(prev => ({ ...prev, ...newChanges }));
@@ -53,6 +101,32 @@ export default function Piyasalar() {
 
     previousPricesRef.current = prices;
   }, [prices]);
+
+  // Son güncelleme zamanı
+  useEffect(() => {
+    const updateTimeSince = () => {
+      if (!lastUpdate) {
+        setTimeSinceUpdate('');
+        return;
+      }
+      const now = new Date();
+      const diffMs = now - lastUpdate;
+      const diffSec = Math.floor(diffMs / 1000);
+      const diffMin = Math.floor(diffSec / 60);
+
+      if (diffSec < 5) {
+        setTimeSinceUpdate('Şimdi');
+      } else if (diffSec < 60) {
+        setTimeSinceUpdate(`${diffSec}s önce`);
+      } else {
+        setTimeSinceUpdate(`${diffMin}dk önce`);
+      }
+    };
+
+    updateTimeSince();
+    const interval = setInterval(updateTimeSince, 1000);
+    return () => clearInterval(interval);
+  }, [lastUpdate]);
 
   useEffect(() => {
     setMounted(true);
@@ -90,18 +164,62 @@ export default function Piyasalar() {
     if (!price) return '-';
     return new Intl.NumberFormat('tr-TR', {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 4
+      maximumFractionDigits: 2
     }).format(price);
+  };
+
+  // Değişim yüzdesini hesapla
+  const calculateChange = (code) => {
+    const history = priceHistory[code];
+    if (!history || history.prices.length < 2) return null;
+
+    const openPrice = history.prices[0];
+    const currentPrice = history.lastPrice;
+
+    if (!openPrice || openPrice === 0) return null;
+
+    const change = ((currentPrice - openPrice) / openPrice) * 100;
+    return change;
   };
 
   const filteredPrices = prices
     .filter(p => {
       if (showOnlyFavorites && !favorites.includes(p.code)) return false;
-      if (filter !== 'all' && p.category !== filter) return false;
+      if (activeCategory !== 'all' && getCategoryFromPrice(p) !== activeCategory) return false;
       if (search && !p.name.toLowerCase().includes(search.toLowerCase()) && !p.code.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     })
     .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  // Mini Sparkline komponenti
+  const MiniSparkline = ({ data, isUp }) => {
+    if (!data || data.length < 2) return null;
+
+    const width = 50;
+    const height = 20;
+    const max = Math.max(...data);
+    const min = Math.min(...data);
+    const range = max - min || 1;
+
+    const points = data.map((value, index) => {
+      const x = (index / (data.length - 1)) * width;
+      const y = height - ((value - min) / range) * height;
+      return `${x},${y}`;
+    }).join(' ');
+
+    const color = isUp ? '#10B981' : '#EF4444';
+
+    return (
+      <svg width={width} height={height} className="inline-block">
+        <polyline
+          fill="none"
+          stroke={color}
+          strokeWidth="1.5"
+          points={points}
+        />
+      </svg>
+    );
+  };
 
   return (
     <>
@@ -110,16 +228,12 @@ export default function Piyasalar() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {faviconBase64 && <link rel="icon" href={faviconBase64} />}
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <style>{`
-          #price-table-container:fullscreen { background: white; padding: 2rem; overflow-y: auto; }
-          #price-table-container:fullscreen .fullscreen-hide { display: none !important; }
-        `}</style>
       </Head>
 
-      <div className="min-h-screen bg-white" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-        {/* Header - Midas Style */}
-        <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="min-h-screen bg-gray-50" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+        {/* Header */}
+        <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between h-16">
               {/* Logo */}
               <Link href="/" className="flex items-center">
@@ -139,33 +253,33 @@ export default function Piyasalar() {
               </Link>
 
               {/* Desktop Navigation */}
-              <nav className="hidden md:flex items-center space-x-8">
-                <Link href="/" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+              <nav className="hidden md:flex items-center space-x-1">
+                <Link href="/" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                   Fiyatlar
                 </Link>
-                <Link href="/piyasalar" className="text-sm font-medium text-blue-600">
+                <Link href="/piyasalar" className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg">
                   Piyasalar
                 </Link>
-                <Link href="/alarms" className="relative text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                <Link href="/alarms" className="relative px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                   Alarmlar
                   {activeAlarmsCount > 0 && (
-                    <span className="absolute -top-2 -right-4 w-5 h-5 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
                       {activeAlarmsCount}
                     </span>
                   )}
                 </Link>
-                <Link href="/iletisim" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                <Link href="/iletisim" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                   İletişim
                 </Link>
               </nav>
 
               {/* Right Side */}
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
                 {/* Connection Status */}
-                <div className="hidden sm:flex items-center space-x-2">
-                  <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-300'}`} />
-                  <span className="text-xs text-gray-500">
-                    {isConnected ? 'Canlı' : 'Bağlanıyor...'}
+                <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 bg-gray-100 rounded-full">
+                  <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                  <span className="text-xs font-medium text-gray-600">
+                    {isConnected ? (timeSinceUpdate || 'Canlı') : 'Bağlanıyor...'}
                   </span>
                 </div>
 
@@ -175,7 +289,7 @@ export default function Piyasalar() {
                     href={`https://wa.me/${socialWhatsapp}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hidden sm:flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                    className="hidden sm:flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all hover:shadow-lg"
                   >
                     <span>İletişim</span>
                     <ArrowRight size={16} />
@@ -185,7 +299,7 @@ export default function Piyasalar() {
                 {/* Mobile Menu */}
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="md:hidden p-2 text-gray-600 hover:text-gray-900"
+                  className="md:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
                 >
                   {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
@@ -205,7 +319,7 @@ export default function Piyasalar() {
                   <Link href="/alarms" className="px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg flex items-center justify-between">
                     <span>Alarmlar</span>
                     {activeAlarmsCount > 0 && (
-                      <span className="px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">
+                      <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
                         {activeAlarmsCount}
                       </span>
                     )}
@@ -220,84 +334,75 @@ export default function Piyasalar() {
         </header>
 
         {/* Main Content */}
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-          {/* Page Title */}
-          <div className="mb-8 fullscreen-hide">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Canlı Piyasa Fiyatları</h1>
-            <p className="text-gray-500">Gerçek zamanlı döviz ve altın fiyatları</p>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+          {/* Page Header */}
+          <div className="mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Canlı Piyasa Fiyatları</h1>
+                <p className="text-sm text-gray-500 mt-1">Gerçek zamanlı döviz ve altın fiyatları</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg border border-gray-200">
+                  <Activity size={16} className="text-blue-500" />
+                  <span className="text-sm font-medium text-gray-700">{prices.length} Ürün</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Filter Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 fullscreen-hide">
-            {/* Filter Tabs */}
-            <div className="flex items-center space-x-2 overflow-x-auto pb-2 sm:pb-0">
+          {/* Category Tabs */}
+          <div className="mb-6 bg-white rounded-xl border border-gray-200 p-2">
+            <div className="flex items-center space-x-2 overflow-x-auto pb-1">
+              {categories.map((cat) => {
+                const IconComponent = cat.icon;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => { setActiveCategory(cat.id); setShowOnlyFavorites(false); }}
+                    className={`flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
+                      activeCategory === cat.id && !showOnlyFavorites
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <IconComponent size={16} />
+                    <span>{cat.name}</span>
+                  </button>
+                );
+              })}
+              <div className="w-px h-8 bg-gray-200 mx-2" />
               <button
-                onClick={() => { setFilter('all'); setShowOnlyFavorites(false); }}
-                className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors ${
-                  filter === 'all' && !showOnlyFavorites
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                Tümü
-              </button>
-              <button
-                onClick={() => { setFilter('altin'); setShowOnlyFavorites(false); }}
-                className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors ${
-                  filter === 'altin' && !showOnlyFavorites
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                Altın
-              </button>
-              <button
-                onClick={() => { setFilter('doviz'); setShowOnlyFavorites(false); }}
-                className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors ${
-                  filter === 'doviz' && !showOnlyFavorites
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                Döviz
-              </button>
-              <button
-                onClick={() => { setFilter('gumus'); setShowOnlyFavorites(false); }}
-                className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors ${
-                  filter === 'gumus' && !showOnlyFavorites
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                Gümüş
-              </button>
-              <button
-                onClick={() => { setShowOnlyFavorites(true); setFilter('all'); }}
-                className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors flex items-center space-x-1.5 ${
+                onClick={() => { setShowOnlyFavorites(true); }}
+                className={`flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
                   showOnlyFavorites
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-yellow-500 text-white shadow-md'
+                    : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
-                <Star size={14} className={favorites.length > 0 ? 'fill-current' : ''} />
+                <Star size={16} className={showOnlyFavorites || favorites.length > 0 ? 'fill-current' : ''} />
                 <span>Favoriler</span>
                 {favorites.length > 0 && (
-                  <span className={`text-xs ${showOnlyFavorites ? 'text-blue-200' : 'text-gray-400'}`}>
-                    ({favorites.length})
+                  <span className={`px-1.5 py-0.5 text-xs rounded-full ${
+                    showOnlyFavorites ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 text-gray-600'
+                  }`}>
+                    {favorites.length}
                   </span>
                 )}
               </button>
             </div>
+          </div>
 
-            {/* Search */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          {/* Search */}
+          <div className="mb-6">
+            <div className="relative max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input
                 type="text"
                 placeholder="Altın, döviz veya kod ile ara..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-100 border-0 rounded-lg text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
             </div>
           </div>
@@ -305,31 +410,33 @@ export default function Piyasalar() {
           {/* Price Table */}
           <div id="price-table-container" className="mb-8">
             {prices.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 bg-gray-50 rounded-2xl">
-                <div className="w-10 h-10 border-3 border-gray-200 border-t-blue-600 rounded-full animate-spin mb-4" />
+              <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-200">
+                <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mb-4" />
                 <p className="text-gray-500 text-sm">Fiyatlar yükleniyor...</p>
               </div>
             ) : filteredPrices.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 bg-gray-50 rounded-2xl">
-                <Star size={40} className="text-gray-300 mb-4" />
+              <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-200">
+                <Star size={48} className="text-gray-300 mb-4" />
                 <p className="text-gray-500 text-sm mb-4">
                   {showOnlyFavorites ? 'Henüz favori eklemediniz' : 'Sonuç bulunamadı'}
                 </p>
                 <button
-                  onClick={() => { setShowOnlyFavorites(false); setSearch(''); }}
-                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg"
+                  onClick={() => { setShowOnlyFavorites(false); setActiveCategory('all'); setSearch(''); }}
+                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Tüm Fiyatlara Dön
                 </button>
               </div>
             ) : (
-              <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+              <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
                 {/* Table Header */}
-                <div className="grid grid-cols-12 gap-2 px-4 sm:px-6 py-4 bg-gray-50 border-b border-gray-200">
-                  <div className="col-span-5 sm:col-span-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">Ürün</div>
-                  <div className="col-span-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Alış</div>
-                  <div className="col-span-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Satış</div>
-                  <div className="col-span-1 sm:col-span-2"></div>
+                <div className="grid grid-cols-12 gap-2 px-4 sm:px-6 py-3 bg-gray-50 border-b border-gray-200">
+                  <div className="col-span-4 sm:col-span-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ürün</div>
+                  <div className="col-span-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:block">Trend</div>
+                  <div className="col-span-3 sm:col-span-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Alış</div>
+                  <div className="col-span-3 sm:col-span-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Satış</div>
+                  <div className="col-span-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:block">Değişim</div>
+                  <div className="col-span-2 sm:col-span-1"></div>
                 </div>
 
                 {/* Table Body */}
@@ -339,29 +446,41 @@ export default function Piyasalar() {
                     const change = priceChanges[price.code];
                     const isUp = change === 'up';
                     const isDown = change === 'down';
+                    const percentChange = calculateChange(price.code);
+                    const history = priceHistory[price.code];
+                    const trendUp = percentChange !== null ? percentChange >= 0 : null;
 
                     return (
                       <div
                         key={price.code}
-                        className={`grid grid-cols-12 gap-2 px-4 sm:px-6 py-4 items-center transition-colors hover:bg-gray-50 ${
-                          isUp ? 'bg-green-50' : isDown ? 'bg-red-50' : ''
-                        }`}
+                        className={`grid grid-cols-12 gap-2 px-4 sm:px-6 py-3 items-center transition-all duration-300 cursor-pointer group
+                          ${isUp ? 'bg-green-50' : isDown ? 'bg-red-50' : 'hover:bg-gray-50'}
+                        `}
                       >
                         {/* Product */}
-                        <div className="col-span-5 sm:col-span-4">
+                        <div className="col-span-4 sm:col-span-3">
                           <div className="flex items-center space-x-3">
-                            <div>
-                              <p className="text-sm font-semibold text-gray-900">{price.name}</p>
-                              <p className="text-xs text-gray-400">{price.code}</p>
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                                {price.name}
+                              </p>
+                              <p className="text-xs text-gray-400 truncate">{price.code}</p>
                             </div>
                           </div>
                         </div>
 
+                        {/* Mini Sparkline - Desktop */}
+                        <div className="col-span-2 hidden sm:flex justify-end items-center">
+                          {history?.prices && (
+                            <MiniSparkline data={history.prices} isUp={trendUp} />
+                          )}
+                        </div>
+
                         {/* Buy Price */}
-                        <div className="col-span-3 text-right">
+                        <div className="col-span-3 sm:col-span-2 text-right">
                           <div className="flex items-center justify-end space-x-1">
-                            {isUp && <TrendingUp size={14} className="text-green-600" />}
-                            {isDown && <TrendingDown size={14} className="text-red-600" />}
+                            {isUp && <TrendingUp size={12} className="text-green-600 flex-shrink-0" />}
+                            {isDown && <TrendingDown size={12} className="text-red-600 flex-shrink-0" />}
                             <span className={`text-sm font-semibold tabular-nums ${
                               isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-gray-900'
                             }`}>
@@ -371,10 +490,10 @@ export default function Piyasalar() {
                         </div>
 
                         {/* Sell Price */}
-                        <div className="col-span-3 text-right">
+                        <div className="col-span-3 sm:col-span-2 text-right">
                           <div className="flex items-center justify-end space-x-1">
-                            {isUp && <TrendingUp size={14} className="text-green-600" />}
-                            {isDown && <TrendingDown size={14} className="text-red-600" />}
+                            {isUp && <TrendingUp size={12} className="text-green-600 flex-shrink-0" />}
+                            {isDown && <TrendingDown size={12} className="text-red-600 flex-shrink-0" />}
                             <span className={`text-sm font-semibold tabular-nums ${
                               isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-gray-900'
                             }`}>
@@ -383,18 +502,33 @@ export default function Piyasalar() {
                           </div>
                         </div>
 
+                        {/* Change Percentage - Desktop */}
+                        <div className="col-span-2 text-right hidden sm:block">
+                          {percentChange !== null ? (
+                            <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold ${
+                              percentChange >= 0
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-red-100 text-red-700'
+                            }`}>
+                              {percentChange >= 0 ? '+' : ''}{percentChange.toFixed(2)}%
+                            </span>
+                          ) : (
+                            <span className="text-xs text-gray-400">-</span>
+                          )}
+                        </div>
+
                         {/* Favorite */}
-                        <div className="col-span-1 sm:col-span-2 flex justify-end">
+                        <div className="col-span-2 sm:col-span-1 flex justify-end">
                           <button
-                            onClick={() => toggleFavorite(price.code)}
-                            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                            onClick={(e) => { e.stopPropagation(); toggleFavorite(price.code); }}
+                            className="p-2 rounded-lg hover:bg-gray-100 transition-all hover:scale-110"
                           >
                             <Star
                               size={18}
-                              className={`transition-colors ${
+                              className={`transition-all ${
                                 isFavorite
                                   ? 'fill-yellow-400 text-yellow-400'
-                                  : 'text-gray-300 hover:text-gray-400'
+                                  : 'text-gray-300 group-hover:text-gray-400'
                               }`}
                             />
                           </button>
@@ -408,7 +542,7 @@ export default function Piyasalar() {
 
             {/* Fullscreen Button */}
             {filteredPrices.length > 0 && (
-              <div className="mt-4 flex justify-center fullscreen-hide">
+              <div className="mt-4 flex justify-center">
                 <button
                   onClick={() => {
                     const container = document.getElementById('price-table-container');
@@ -418,7 +552,7 @@ export default function Piyasalar() {
                       container.requestFullscreen();
                     }
                   }}
-                  className="inline-flex items-center space-x-2 px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                  className="inline-flex items-center space-x-2 px-4 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-white rounded-lg transition-all border border-transparent hover:border-gray-200"
                 >
                   <Maximize2 size={16} />
                   <span>Tam Ekran</span>
@@ -428,7 +562,7 @@ export default function Piyasalar() {
           </div>
 
           {/* Disclaimer */}
-          <div className="bg-gray-50 rounded-xl p-4 text-center fullscreen-hide">
+          <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
             <p className="text-xs text-gray-500">
               Fiyatlar bilgi amaçlıdır. İşlem yapmadan önce şubelerimizle iletişime geçiniz.
             </p>
@@ -436,8 +570,8 @@ export default function Piyasalar() {
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-gray-100 mt-12">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <footer className="border-t border-gray-200 mt-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
             <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
               <div className="flex items-center space-x-2">
                 {logoBase64 ? (
@@ -452,10 +586,10 @@ export default function Piyasalar() {
               </div>
 
               <nav className="flex items-center space-x-6">
-                <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">Fiyatlar</Link>
-                <Link href="/piyasalar" className="text-sm text-gray-500 hover:text-gray-900">Piyasalar</Link>
-                <Link href="/alarms" className="text-sm text-gray-500 hover:text-gray-900">Alarmlar</Link>
-                <Link href="/iletisim" className="text-sm text-gray-500 hover:text-gray-900">İletişim</Link>
+                <Link href="/" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Fiyatlar</Link>
+                <Link href="/piyasalar" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Piyasalar</Link>
+                <Link href="/alarms" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Alarmlar</Link>
+                <Link href="/iletisim" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">İletişim</Link>
               </nav>
 
               <p className="text-xs text-gray-400">
@@ -470,6 +604,35 @@ export default function Piyasalar() {
         * {
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
+        }
+
+        #price-table-container:fullscreen {
+          background: white;
+          padding: 2rem;
+          overflow-y: auto;
+        }
+
+        .group:hover {
+          transform: translateX(2px);
+        }
+
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
         }
       `}</style>
     </>
