@@ -312,7 +312,7 @@ export default function ArticleDetail() {
             {/* Bottom Bar */}
             <div className="pt-6 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
               <p className="text-gray-400 text-xs">
-                © 2024 Nomanoğlu Kuyumculuk. Tüm hakları saklıdır.
+                © 2024 AKA Kuyumculuk. Tüm hakları saklıdır.
               </p>
               <div className="flex items-center space-x-4">
                 {socialFacebook && (

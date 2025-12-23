@@ -38,7 +38,7 @@ const settingsSchema = new mongoose.Schema({
   },
   contactEmail: {
     type: String,
-    default: 'info@nomanoglu.com'
+    default: 'info@akakuyumculuk.com'
   },
   contactAddress: {
     type: String,

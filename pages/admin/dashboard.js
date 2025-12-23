@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import axios from 'axios';
 import { useWebSocket } from '../../hooks/useWebSocket';
-import { TrendingUp, LogOut, Plus, Edit2, Trash2, X, Save, AlertCircle, RefreshCw, Settings, FileText, Users, GripVertical, Building2, MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react';
+import { TrendingUp, LogOut, Plus, Edit2, Trash2, X, Save, AlertCircle, RefreshCw, Settings, GripVertical, Building2, MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -25,7 +25,7 @@ export default function AdminDashboard() {
 
   // İletişim Bilgileri state
   const [contactPhone, setContactPhone] = useState('+90 (XXX) XXX XX XX');
-  const [contactEmail, setContactEmail] = useState('info@nomanoglu.com');
+  const [contactEmail, setContactEmail] = useState('info@akakuyumculuk.com');
   const [contactAddress, setContactAddress] = useState('Istanbul, Turkiye');
   const [workingHours, setWorkingHours] = useState('Pzt - Cmt: 09:00 - 19:00');
   const [workingHoursNote, setWorkingHoursNote] = useState('Pazar: Kapali');
@@ -37,36 +37,11 @@ export default function AdminDashboard() {
   const [socialWhatsapp, setSocialWhatsapp] = useState('905322904601');
 
   // Tab state
-  const [activeTab, setActiveTab] = useState('prices'); // 'prices' | 'family' | 'articles' | 'branches' | 'settings'
+  const [activeTab, setActiveTab] = useState('prices'); // 'prices' | 'branches' | 'settings'
 
   // Drag & Drop state
   const [draggedItem, setDraggedItem] = useState(null);
   const [draggedOverItem, setDraggedOverItem] = useState(null);
-
-  // Family Cards state
-  const [familyCards, setFamilyCards] = useState([]);
-  const [showFamilyModal, setShowFamilyModal] = useState(false);
-  const [editingFamily, setEditingFamily] = useState(null);
-  const [familyFormData, setFamilyFormData] = useState({
-    label: '',
-    title: '',
-    description: '',
-    icon: 'TrendingUp',
-    order: 1
-  });
-
-  // Articles state
-  const [articles, setArticles] = useState([]);
-  const [showArticleModal, setShowArticleModal] = useState(false);
-  const [editingArticle, setEditingArticle] = useState(null);
-  const [articleFormData, setArticleFormData] = useState({
-    category: 'Yatırım',
-    title: '',
-    description: '',
-    content: '',
-    icon: 'Coins',
-    order: 1
-  });
 
   // Branches state
   const [branches, setBranches] = useState([]);
@@ -162,11 +137,9 @@ export default function AdminDashboard() {
   const loadData = async () => {
     try {
       console.log('🔄 Admin Panel - Veri yükleniyor...');
-      const [customRes, settingsRes, familyRes, articlesRes, branchesRes] = await Promise.all([
+      const [customRes, settingsRes, branchesRes] = await Promise.all([
         axios.get(`${apiUrl}/api/custom-prices`),
         axios.get(`${apiUrl}/api/settings`),
-        axios.get(`${apiUrl}/api/family-cards`),
-        axios.get(`${apiUrl}/api/articles`),
         axios.get(`${apiUrl}/api/branches`)
       ]);
       
@@ -184,7 +157,7 @@ export default function AdminDashboard() {
         setFaviconBase64(s.faviconBase64 || '');
         // İletişim bilgileri
         setContactPhone(s.contactPhone || '+90 (XXX) XXX XX XX');
-        setContactEmail(s.contactEmail || 'info@nomanoglu.com');
+        setContactEmail(s.contactEmail || 'info@akakuyumculuk.com');
         setContactAddress(s.contactAddress || 'Istanbul, Turkiye');
         setWorkingHours(s.workingHours || 'Pzt - Cmt: 09:00 - 19:00');
         setWorkingHoursNote(s.workingHoursNote || 'Pazar: Kapali');
@@ -195,16 +168,6 @@ export default function AdminDashboard() {
         setSocialTiktok(s.socialTiktok || '');
         setSocialWhatsapp(s.socialWhatsapp || '905322904601');
         console.log('✅ Ayarlar yüklendi');
-      }
-
-      if (familyRes.data.success) {
-        setFamilyCards(familyRes.data.data);
-        console.log(`✅ ${familyRes.data.data.length} family kart yüklendi`);
-      }
-
-      if (articlesRes.data.success) {
-        setArticles(articlesRes.data.data);
-        console.log(`✅ ${articlesRes.data.data.length} makale yüklendi`);
       }
 
       if (branchesRes.data.success) {
@@ -400,101 +363,6 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Ayar kaydetme hatası:', error);
       alert('Kaydetme başarısız!');
-    }
-  };
-
-  // ==================== FAMILY CARDS HANDLERS ====================
-  
-  const openCreateFamilyModal = () => {
-    setEditingFamily(null);
-    setFamilyFormData({
-      label: '',
-      title: '',
-      description: '',
-      icon: 'TrendingUp',
-      order: familyCards.length + 1
-    });
-    setShowFamilyModal(true);
-  };
-
-  const openEditFamilyModal = (card) => {
-    setEditingFamily(card);
-    setFamilyFormData(card);
-    setShowFamilyModal(true);
-  };
-
-  const handleSaveFamily = async () => {
-    try {
-      if (editingFamily) {
-        await axios.put(`${apiUrl}/api/family-cards/${editingFamily.id}`, familyFormData);
-      } else {
-        await axios.post(`${apiUrl}/api/family-cards`, familyFormData);
-      }
-      setShowFamilyModal(false);
-      loadData();
-    } catch (error) {
-      console.error('Family kaydetme hatası:', error);
-      alert('Kaydetme başarısız!');
-    }
-  };
-
-  const handleDeleteFamily = async (id) => {
-    if (!confirm('Bu kartı silmek istediğinizden emin misiniz?')) return;
-    
-    try {
-      await axios.delete(`${apiUrl}/api/family-cards/${id}`);
-      loadData();
-    } catch (error) {
-      console.error('Family silme hatası:', error);
-      alert('Silme başarısız!');
-    }
-  };
-
-  // ==================== ARTICLES HANDLERS ====================
-  
-  const openCreateArticleModal = () => {
-    setEditingArticle(null);
-    setArticleFormData({
-      category: 'Yatırım',
-      title: '',
-      description: '',
-      content: '',
-      icon: 'Coins',
-      order: articles.length + 1
-    });
-    setShowArticleModal(true);
-  };
-
-  const openEditArticleModal = (article) => {
-    setEditingArticle(article);
-    setArticleFormData(article);
-    setShowArticleModal(true);
-  };
-
-  const handleSaveArticle = async () => {
-    try {
-      if (editingArticle) {
-        await axios.put(`${apiUrl}/api/articles/${editingArticle.id}`, articleFormData);
-      } else {
-        await axios.post(`${apiUrl}/api/articles`, articleFormData);
-      }
-      setShowArticleModal(false);
-      loadData();
-    } catch (error) {
-      console.error('Makale kaydetme hatası:', error);
-      alert('Kaydetme başarısız!');
-    }
-  };
-
-  const handleDeleteArticle = async (id) => {
-    if (!confirm('Bu makaleyi silmek istediğinizden emin misiniz?')) return;
-    
-    try {
-      await axios.delete(`${apiUrl}/api/articles/${id}`);
-      loadData();
-    } catch (error) {
-      console.error('Makale silme hatası:', error);
-      alert('Silme başarısız!');
     }
   };
 
@@ -767,32 +635,6 @@ export default function AdminDashboard() {
                 <div className="flex items-center space-x-2">
                   <TrendingUp size={18} />
                   <span>Fiyat Yönetimi</span>
-                </div>
-              </button>
-              <button
-                onClick={() => setActiveTab('family')}
-                className={`px-6 py-4 font-semibold text-sm border-b-2 transition-colors ${
-                  activeTab === 'family'
-                    ? 'border-amber-500 text-amber-600'
-                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center space-x-2">
-                  <Users size={18} />
-                  <span>NOMANOĞLU Ailesi</span>
-                </div>
-              </button>
-              <button
-                onClick={() => setActiveTab('articles')}
-                className={`px-6 py-4 font-semibold text-sm border-b-2 transition-colors ${
-                  activeTab === 'articles'
-                    ? 'border-amber-500 text-amber-600'
-                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center space-x-2">
-                  <FileText size={18} />
-                  <span>Rehber Makaleleri</span>
                 </div>
               </button>
               <button
@@ -1093,198 +935,6 @@ export default function AdminDashboard() {
                         </tr>
                       );
                     })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-          </>
-          )}
-
-          {/* ==================== NOMANOĞLU AİLESİ TAB ==================== */}
-          {activeTab === 'family' && (
-          <>
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">NOMANOĞLU Ailesi Kartları</h2>
-              <p className="text-gray-600 mt-1">Anasayfada görünecek kurumsal kartları yönetin</p>
-            </div>
-            <button
-              onClick={openCreateFamilyModal}
-              className="flex items-center space-x-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-semibold shadow-sm"
-            >
-              <Plus size={18} />
-              <span>Yeni Kart Ekle</span>
-            </button>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-            {familyCards.length === 0 ? (
-              <div className="px-6 py-16 text-center">
-                <div className="text-gray-400">
-                  <Users size={48} className="mx-auto mb-4 text-gray-300" />
-                  <p className="text-lg font-medium mb-2">Henüz kart eklenmedi</p>
-                  <p className="text-sm mb-4">İlk kartı oluşturarak başlayın</p>
-                  <button
-                    onClick={openCreateFamilyModal}
-                    className="inline-flex items-center space-x-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors font-semibold"
-                  >
-                    <Plus size={18} />
-                    <span>İlk Kartı Oluştur</span>
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
-                      <th className="text-left px-6 py-4 text-sm font-bold text-gray-700">Etiket</th>
-                      <th className="text-left px-6 py-4 text-sm font-bold text-gray-700">Başlık</th>
-                      <th className="text-left px-6 py-4 text-sm font-bold text-gray-700">Açıklama</th>
-                      <th className="text-center px-4 py-4 text-sm font-bold text-gray-700">İkon</th>
-                      <th className="text-center px-4 py-4 text-sm font-bold text-gray-700">Sıra</th>
-                      <th className="text-center px-4 py-4 text-sm font-bold text-gray-700">İşlemler</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {familyCards.map((card, index) => (
-                      <tr key={card.id} className={`border-b border-gray-100 hover:bg-amber-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
-                        <td className="px-6 py-4">
-                          <span className="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-1 rounded">{card.label}</span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="font-semibold text-gray-900">{card.title}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-600">{card.description}</div>
-                        </td>
-                        <td className="px-4 py-4 text-center">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-amber-100 text-amber-600 rounded-lg">
-                            {card.icon === 'TrendingUp' && <TrendingUp size={16} />}
-                            {card.icon === 'CheckCircle' && <AlertCircle size={16} />}
-                            {card.icon === 'Star' && <Plus size={16} />}
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 text-center">
-                          <span className="font-mono font-semibold text-gray-700">{card.order}</span>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="flex items-center justify-center space-x-2">
-                            <button
-                              onClick={() => openEditFamilyModal(card)}
-                              className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg transition-colors"
-                              title="Düzenle"
-                            >
-                              <Edit2 size={16} />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteFamily(card.id)}
-                              className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors"
-                              title="Sil"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-          </>
-          )}
-
-          {/* ==================== REHBER MAKALELERİ TAB ==================== */}
-          {activeTab === 'articles' && (
-          <>
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Bilgi & Rehber Makaleleri</h2>
-              <p className="text-gray-600 mt-1">Anasayfada görünecek içerik makalelerini yönetin</p>
-            </div>
-            <button
-              onClick={openCreateArticleModal}
-              className="flex items-center space-x-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-semibold shadow-sm"
-            >
-              <Plus size={18} />
-              <span>Yeni Makale Ekle</span>
-            </button>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-            {articles.length === 0 ? (
-              <div className="px-6 py-16 text-center">
-                <div className="text-gray-400">
-                  <FileText size={48} className="mx-auto mb-4 text-gray-300" />
-                  <p className="text-lg font-medium mb-2">Henüz makale eklenmedi</p>
-                  <p className="text-sm mb-4">İlk makaleyi oluşturarak başlayın</p>
-                  <button
-                    onClick={openCreateArticleModal}
-                    className="inline-flex items-center space-x-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors font-semibold"
-                  >
-                    <Plus size={18} />
-                    <span>İlk Makaleyi Oluştur</span>
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
-                      <th className="text-left px-6 py-4 text-sm font-bold text-gray-700">Kategori</th>
-                      <th className="text-left px-6 py-4 text-sm font-bold text-gray-700">Başlık</th>
-                      <th className="text-left px-6 py-4 text-sm font-bold text-gray-700">Açıklama</th>
-                      <th className="text-center px-4 py-4 text-sm font-bold text-gray-700">İkon</th>
-                      <th className="text-center px-4 py-4 text-sm font-bold text-gray-700">Sıra</th>
-                      <th className="text-center px-4 py-4 text-sm font-bold text-gray-700">İşlemler</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {articles.map((article, index) => (
-                      <tr key={article.id} className={`border-b border-gray-100 hover:bg-amber-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
-                        <td className="px-6 py-4">
-                          <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded">{article.category}</span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="font-semibold text-gray-900">{article.title}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-600">{article.description}</div>
-                        </td>
-                        <td className="px-4 py-4 text-center">
-                          <div className="inline-flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded-lg">
-                            {article.icon === 'Coins' && <TrendingUp size={16} />}
-                            {article.icon === 'Gem' && <AlertCircle size={16} />}
-                            {article.icon === 'TrendingUp' && <TrendingUp size={16} />}
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 text-center">
-                          <span className="font-mono font-semibold text-gray-700">{article.order}</span>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="flex items-center justify-center space-x-2">
-                            <button
-                              onClick={() => openEditArticleModal(article)}
-                              className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg transition-colors"
-                              title="Düzenle"
-                            >
-                              <Edit2 size={16} />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteArticle(article.id)}
-                              className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors"
-                              title="Sil"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
                   </tbody>
                 </table>
               </div>
@@ -1984,212 +1634,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Family Modal */}
-        {showFamilyModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl max-w-2xl w-full">
-              <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
-                <h2 className="text-xl font-bold text-gray-900">
-                  {editingFamily ? 'Kartı Düzenle' : 'Yeni Kart Oluştur'}
-                </h2>
-                <button
-                  onClick={() => setShowFamilyModal(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              <div className="p-6 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Etiket (Üstteki küçük yazı)</label>
-                  <input
-                    type="text"
-                    value={familyFormData.label}
-                    onChange={(e) => setFamilyFormData({...familyFormData, label: e.target.value})}
-                    placeholder="örn: 1967'den Beri"
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Başlık *</label>
-                  <input
-                    type="text"
-                    value={familyFormData.title}
-                    onChange={(e) => setFamilyFormData({...familyFormData, title: e.target.value})}
-                    placeholder="örn: Yarım asırlık deneyim."
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Açıklama</label>
-                  <textarea
-                    value={familyFormData.description}
-                    onChange={(e) => setFamilyFormData({...familyFormData, description: e.target.value})}
-                    placeholder="Kısa açıklama..."
-                    rows={3}
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">İkon</label>
-                    <select
-                      value={familyFormData.icon}
-                      onChange={(e) => setFamilyFormData({...familyFormData, icon: e.target.value})}
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
-                    >
-                      <option value="TrendingUp">Yükseliş Ok</option>
-                      <option value="CheckCircle">Check İşareti</option>
-                      <option value="Star">Yıldız</option>
-                      <option value="Coins">Para</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Sıra</label>
-                    <input
-                      type="number"
-                      value={familyFormData.order}
-                      onChange={(e) => setFamilyFormData({...familyFormData, order: parseInt(e.target.value) || 1})}
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 border-t border-gray-200 px-6 py-4 flex items-center justify-end space-x-3 rounded-b-2xl">
-                <button
-                  onClick={() => setShowFamilyModal(false)}
-                  className="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors font-medium"
-                >
-                  İptal
-                </button>
-                <button
-                  onClick={handleSaveFamily}
-                  disabled={!familyFormData.title}
-                  className="flex items-center space-x-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg transition-colors font-semibold"
-                >
-                  <Save size={18} />
-                  <span>{editingFamily ? 'Güncelle' : 'Kaydet'}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Article Modal */}
-        {showArticleModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
-                <h2 className="text-xl font-bold text-gray-900">
-                  {editingArticle ? 'Makaleyi Düzenle' : 'Yeni Makale Oluştur'}
-                </h2>
-                <button
-                  onClick={() => setShowArticleModal(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              <div className="p-6 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-                  <input
-                    type="text"
-                    value={articleFormData.category}
-                    onChange={(e) => setArticleFormData({...articleFormData, category: e.target.value})}
-                    placeholder="örn: Yatırım, Karşılaştırma, Piyasa"
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Başlık *</label>
-                  <input
-                    type="text"
-                    value={articleFormData.title}
-                    onChange={(e) => setArticleFormData({...articleFormData, title: e.target.value})}
-                    placeholder="örn: Altın Yatırımı Rehberi"
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Kısa Açıklama (Özet)</label>
-                  <textarea
-                    value={articleFormData.description}
-                    onChange={(e) => setArticleFormData({...articleFormData, description: e.target.value})}
-                    placeholder="Anasayfada görünecek kısa açıklama..."
-                    rows={2}
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tam İçerik (Makale Detayı)</label>
-                  <textarea
-                    value={articleFormData.content}
-                    onChange={(e) => setArticleFormData({...articleFormData, content: e.target.value})}
-                    placeholder="Makalenin tam içeriğini buraya yazın... (Markdown destekler: **kalın**, *italik*, ### Başlık)"
-                    rows={10}
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all font-mono text-sm"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">💡 Paragraf ayırmak için iki satır boşluk bırakın</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">İkon</label>
-                    <select
-                      value={articleFormData.icon}
-                      onChange={(e) => setArticleFormData({...articleFormData, icon: e.target.value})}
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
-                    >
-                      <option value="Coins">Para</option>
-                      <option value="Gem">Mücevher</option>
-                      <option value="TrendingUp">Yükseliş</option>
-                      <option value="CheckCircle">Check</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Sıra</label>
-                    <input
-                      type="number"
-                      value={articleFormData.order}
-                      onChange={(e) => setArticleFormData({...articleFormData, order: parseInt(e.target.value) || 1})}
-                      className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 border-t border-gray-200 px-6 py-4 flex items-center justify-end space-x-3 rounded-b-2xl">
-                <button
-                  onClick={() => setShowArticleModal(false)}
-                  className="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors font-medium"
-                >
-                  İptal
-                </button>
-                <button
-                  onClick={handleSaveArticle}
-                  disabled={!articleFormData.title}
-                  className="flex items-center space-x-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg transition-colors font-semibold"
-                >
-                  <Save size={18} />
-                  <span>{editingArticle ? 'Güncelle' : 'Kaydet'}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Branch Modal */}
         {showBranchModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -2260,7 +1704,7 @@ export default function AdminDashboard() {
                       type="email"
                       value={branchFormData.email}
                       onChange={(e) => setBranchFormData({...branchFormData, email: e.target.value})}
-                      placeholder="örn: kadirli@nomanoglu.com"
+                      placeholder="örn: kadirli@akakuyumculuk.com"
                       className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all"
                     />
                   </div>

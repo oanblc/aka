@@ -58,7 +58,7 @@ export default function ArticlesPage() {
   return (
     <>
       <Head>
-        <title>Bilgi & Rehber - Nomanoğlu Kuyumculuk</title>
+        <title>Bilgi & Rehber - AKA Kuyumculuk</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="description" content="Altın, gümüş ve döviz hakkında bilgilendirici makaleler ve rehberler." />
       </Head>
@@ -289,7 +289,7 @@ export default function ArticlesPage() {
                       <div className="w-9 h-9 rounded-xl bg-[#f7de00] flex items-center justify-center">
                         <Coins size={18} className="text-gray-900" />
                       </div>
-                      <span className="text-lg font-bold text-gray-900">NOMANOĞLU</span>
+                      <span className="text-lg font-bold text-gray-900">AKA Kuyumculuk</span>
                     </>
                   )}
                 </div>
@@ -353,7 +353,7 @@ export default function ArticlesPage() {
             {/* Bottom Bar */}
             <div className="pt-6 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
               <p className="text-gray-400 text-xs">
-                © 2024 Nomanoğlu Kuyumculuk. Tüm hakları saklıdır.
+                © 2024 AKA Kuyumculuk. Tüm hakları saklıdır.
               </p>
               <div className="flex items-center space-x-4">
                 {socialFacebook && (

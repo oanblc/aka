@@ -55,7 +55,7 @@ let settings = {
   logoHeight: 48, // Logo yüksekliği (px)
   logoWidth: 'auto' // Logo genişliği ('auto' veya px)
 };
-let familyCards = []; // NOMANOĞLU ailesi kartları
+let familyCards = []; // AKA Kuyumculuk ailesi kartları
 let articles = []; // Bilgi & Rehber Makaleleri
 let branches = []; // Şubeler
 
