@@ -87,17 +87,35 @@ export default function AdminDashboard() {
     loadData();
   }, []);
 
-  // WebSocket'ten gelen fiyatları kaynak fiyat olarak kullan
+  // WebSocket'ten gelen fiyatları kaynak fiyat olarak kullan - Cache mantığı ile
   useEffect(() => {
     if (websocketPrices && websocketPrices.length > 0) {
-      // WebSocket'ten gelen fiyatları kaynak fiyat formatına dönüştür
-      const formattedPrices = websocketPrices.map(price => ({
-        code: price.code,
-        name: price.name,
-        rawAlis: price.calculatedAlis || 0,
-        rawSatis: price.calculatedSatis || 0
-      }));
-      setSourcePrices(formattedPrices);
+      setSourcePrices(prevPrices => {
+        // Mevcut fiyatları code'a göre map'e çevir
+        const priceMap = new Map(prevPrices.map(p => [p.code, p]));
+
+        // WebSocket'ten gelen fiyatları işle
+        websocketPrices.forEach(price => {
+          const existing = priceMap.get(price.code);
+          if (existing) {
+            // Mevcut fiyatın değerlerini güncelle
+            existing.rawAlis = price.calculatedAlis || 0;
+            existing.rawSatis = price.calculatedSatis || 0;
+            existing.name = price.name;
+          } else {
+            // Yeni fiyatı ekle
+            priceMap.set(price.code, {
+              code: price.code,
+              name: price.name,
+              rawAlis: price.calculatedAlis || 0,
+              rawSatis: price.calculatedSatis || 0
+            });
+          }
+        });
+
+        // Map'i diziye çevir ve code'a göre sırala
+        return Array.from(priceMap.values()).sort((a, b) => a.code.localeCompare(b.code));
+      });
       setLastUpdate(new Date().toISOString());
     }
   }, [websocketPrices]);
