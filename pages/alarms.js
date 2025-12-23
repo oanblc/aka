@@ -249,21 +249,23 @@ export default function Alarms() {
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-          {/* Page Header */}
-          <div className="mb-8">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Fiyat Alarmları</h1>
-                <p className="text-base text-gray-500 mt-2">İstediğiniz fiyat seviyesine ulaşıldığında bildirim alın</p>
+          {/* Page Header - Modern Tek Satır */}
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-blue-400 rounded-full"></div>
+                <h1 className="text-2xl font-bold text-gray-900">Fiyat Alarmları</h1>
               </div>
-              <button
-                onClick={() => setShowModal(true)}
-                className="flex items-center justify-center space-x-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all hover:shadow-lg"
-              >
-                <Plus size={18} />
-                <span>Yeni Alarm</span>
-              </button>
+              <div className="hidden sm:block h-5 w-px bg-gray-200"></div>
+              <p className="hidden sm:block text-sm text-gray-400 font-medium">Fiyat seviyesine ulaşıldığında bildirim alın</p>
             </div>
+            <button
+              onClick={() => setShowModal(true)}
+              className="flex items-center justify-center space-x-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all hover:shadow-lg"
+            >
+              <Plus size={18} />
+              <span>Yeni Alarm</span>
+            </button>
           </div>
 
           {/* Stats */}

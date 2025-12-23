@@ -206,10 +206,14 @@ export default function Iletisim() {
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-          {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">İletişim & Şubelerimiz</h1>
-            <p className="text-base text-gray-500 mt-2">Türkiye genelinde {branches.length} şubemizle hizmetinizdeyiz</p>
+          {/* Page Header - Modern Tek Satır */}
+          <div className="mb-6 flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-blue-400 rounded-full"></div>
+              <h1 className="text-2xl font-bold text-gray-900">İletişim & Şubelerimiz</h1>
+            </div>
+            <div className="hidden sm:block h-5 w-px bg-gray-200"></div>
+            <p className="hidden sm:block text-sm text-gray-400 font-medium">Türkiye genelinde {branches.length} şubemizle hizmetinizdeyiz</p>
           </div>
 
           {/* Contact Info Cards */}

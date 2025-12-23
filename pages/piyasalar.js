@@ -335,10 +335,14 @@ export default function Piyasalar() {
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-          {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Piyasalar</h1>
-            <p className="text-base text-gray-500 mt-2">Gerçek zamanlı döviz ve altın fiyatları</p>
+          {/* Page Header - Modern Tek Satır */}
+          <div className="mb-6 flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-blue-400 rounded-full"></div>
+              <h1 className="text-2xl font-bold text-gray-900">Piyasalar</h1>
+            </div>
+            <div className="hidden sm:block h-5 w-px bg-gray-200"></div>
+            <p className="hidden sm:block text-sm text-gray-400 font-medium">Gerçek zamanlı döviz ve altın fiyatları</p>
           </div>
 
           {/* Category Tabs */}
