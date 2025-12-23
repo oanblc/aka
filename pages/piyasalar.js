@@ -489,36 +489,34 @@ export default function Piyasalar() {
                         </div>
 
                         {/* Mobile Layout */}
-                        <div className="sm:hidden flex items-center justify-between px-4 py-3">
-                          {/* Left: Product Name + Favorite */}
-                          <div className="flex items-center space-x-2 min-w-0 flex-1">
+                        <div className="sm:hidden flex items-center justify-between px-3 py-2.5 gap-2">
+                          {/* Left: Favorite + Product Name (2 satır) */}
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
                             <button
                               onClick={(e) => { e.stopPropagation(); toggleFavorite(price.code); }}
-                              className="p-1 flex-shrink-0"
+                              className="p-1.5 -ml-1 flex-shrink-0 active:scale-95 transition-transform"
                             >
-                              <Star size={16} className={`${isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                              <Star size={18} className={`${isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                             </button>
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-gray-900 truncate">
-                                {price.name}
-                              </p>
-                            </div>
+                            <p className="text-[13px] font-semibold text-gray-900 leading-tight line-clamp-2">
+                              {price.name}
+                            </p>
                           </div>
 
                           {/* Right: Prices */}
-                          <div className="flex items-center space-x-3 flex-shrink-0">
+                          <div className="flex items-center gap-2 flex-shrink-0">
                             {/* Change indicator */}
                             {(isUp || isDown) && (
-                              <div className={`flex-shrink-0 ${isUp ? 'text-green-600' : 'text-red-600'}`}>
-                                {isUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+                              <div className={`${isUp ? 'text-green-500' : 'text-red-500'}`}>
+                                {isUp ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
                               </div>
                             )}
-                            {/* Prices Column */}
-                            <div className="text-right">
-                              <div className={`text-xs font-medium tabular-nums ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-gray-500'}`}>
+                            {/* Prices */}
+                            <div className="text-right min-w-[70px]">
+                              <div className={`text-[11px] font-medium tabular-nums leading-tight ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-gray-400'}`}>
                                 {formatPrice(price.calculatedAlis)}
                               </div>
-                              <div className={`text-sm font-bold tabular-nums ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-gray-900'}`}>
+                              <div className={`text-[15px] font-bold tabular-nums leading-tight ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-gray-900'}`}>
                                 {formatPrice(price.calculatedSatis)}
                               </div>
                             </div>
