@@ -22,33 +22,43 @@ router.get('/current', (req, res) => {
 // Kaynak fiyatları getir (admin panel için - sadece ham API fiyatları)
 router.get('/sources', async (req, res) => {
   try {
-    // Önce memory'deki fiyatları dene
-    const prices = getCurrentPrices();
-    let sourcePrices = prices.filter(p => !p.isCustom).map(p => ({
-      code: p.code,
-      name: p.name,
-      rawAlis: p.rawAlis,
-      rawSatis: p.rawSatis
-    }));
+    // Memory ve cache'i birleştir - en kapsamlı listeyi döndür
+    const priceMap = new Map();
 
-    let source = 'memory';
-
-    // Eğer memory'de yoksa veya boşsa, cache'den al
-    if (sourcePrices.length === 0) {
-      const cached = await SourcePriceCache.findOne({ key: 'source_prices' });
-      if (cached && cached.prices && cached.prices.length > 0) {
-        sourcePrices = cached.prices;
-        source = 'cache';
-        console.log(`📦 Cache'den ${sourcePrices.length} kaynak fiyat yüklendi`);
-      }
+    // Önce cache'den al (eski ama kapsamlı)
+    const cached = await SourcePriceCache.findOne({ key: 'source_prices' });
+    if (cached && cached.prices) {
+      cached.prices.forEach(p => {
+        priceMap.set(p.code, {
+          code: p.code,
+          name: p.name,
+          rawAlis: p.rawAlis,
+          rawSatis: p.rawSatis
+        });
+      });
     }
+
+    // Sonra memory'den al (güncel fiyatlarla güncelle)
+    const prices = getCurrentPrices();
+    const memoryPrices = prices.filter(p => !p.isCustom);
+    memoryPrices.forEach(p => {
+      priceMap.set(p.code, {
+        code: p.code,
+        name: p.name,
+        rawAlis: p.rawAlis,
+        rawSatis: p.rawSatis
+      });
+    });
+
+    const sourcePrices = Array.from(priceMap.values()).sort((a, b) => a.code.localeCompare(b.code));
 
     res.json({
       success: true,
       data: sourcePrices,
       lastUpdate: new Date().toISOString(),
       count: sourcePrices.length,
-      source
+      cacheCount: cached?.prices?.length || 0,
+      memoryCount: memoryPrices.length
     });
   } catch (error) {
     console.error('Fiyat getirme hatası:', error);
