@@ -370,10 +370,11 @@ export default function Home() {
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-          {/* Page Header */}
-          <div className="mb-8">
+          {/* Page Header - Tek Satır */}
+          <div className="mb-6 flex items-baseline gap-3">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Canlı Fiyatlar</h1>
-            <p className="text-base text-gray-500 mt-2">Anlık altın ve döviz kurları</p>
+            <span className="text-sm text-gray-400">•</span>
+            <p className="text-sm text-gray-500">Anlık altın ve döviz kurları</p>
           </div>
 
           {/* Filter Bar - Tümü, Favoriler ve Arama */}
