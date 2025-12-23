@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useSettings } from '../contexts/SettingsContext';
-import { Menu, Search, TrendingUp, TrendingDown, Star, Maximize2, X, ArrowRight, Activity, LayoutGrid, Coins, DollarSign, Circle } from 'lucide-react';
+import { Menu, Search, TrendingUp, TrendingDown, Star, Maximize2, X, ArrowRight, LayoutGrid } from 'lucide-react';
 
 export default function Piyasalar() {
   const { prices: websocketPrices, isConnected } = useWebSocket();
@@ -20,7 +20,6 @@ export default function Piyasalar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [priceChanges, setPriceChanges] = useState({});
   const [priceHistory, setPriceHistory] = useState({});
-  const [activeCategory, setActiveCategory] = useState('all');
   const previousPricesRef = useRef([]);
   const [timeSinceUpdate, setTimeSinceUpdate] = useState('');
   const [lastUpdate, setLastUpdate] = useState(null);
@@ -43,29 +42,6 @@ export default function Piyasalar() {
       previousPricesRef.current = customPrices;
     }
   }, [websocketPrices]);
-
-  // Kategoriler - Lucide ikonları ile
-  const categories = [
-    { id: 'all', name: 'Tümü', icon: LayoutGrid },
-    { id: 'gold', name: 'Altın', icon: Coins },
-    { id: 'currency', name: 'Döviz', icon: DollarSign },
-    { id: 'silver', name: 'Gümüş', icon: Circle },
-  ];
-
-  // Kategori tespiti
-  const getCategoryFromPrice = (price) => {
-    const code = price.code?.toLowerCase() || '';
-    const name = price.name?.toLowerCase() || '';
-
-    if (code.includes('usd') || code.includes('eur') || code.includes('gbp') ||
-        name.includes('dolar') || name.includes('euro') || name.includes('sterlin')) {
-      return 'currency';
-    }
-    if (code.includes('gumus') || name.includes('gümüş') || name.includes('silver')) {
-      return 'silver';
-    }
-    return 'gold';
-  };
 
   // Fiyat değişikliklerini takip et
   useEffect(() => {
@@ -195,7 +171,6 @@ export default function Piyasalar() {
   const filteredPrices = prices
     .filter(p => {
       if (showOnlyFavorites && !favorites.includes(p.code)) return false;
-      if (activeCategory !== 'all' && getCategoryFromPrice(p) !== activeCategory) return false;
       if (search && !p.name.toLowerCase().includes(search.toLowerCase()) && !p.code.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     })
@@ -355,59 +330,53 @@ export default function Piyasalar() {
             <p className="hidden sm:block text-sm text-gray-400 font-medium">Gerçek zamanlı döviz ve altın fiyatları</p>
           </div>
 
-          {/* Category Tabs */}
+          {/* Filter Bar - Tümü, Favoriler ve Arama */}
           <div className="mb-6 bg-white rounded-xl border border-gray-200 p-2">
-            <div className="flex items-center space-x-2 overflow-x-auto pb-1">
-              {categories.map((cat) => {
-                const IconComponent = cat.icon;
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => { setActiveCategory(cat.id); setShowOnlyFavorites(false); }}
-                    className={`flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
-                      activeCategory === cat.id && !showOnlyFavorites
-                        ? 'bg-blue-600 text-white shadow-md'
-                        : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                  >
-                    <IconComponent size={16} />
-                    <span>{cat.name}</span>
-                  </button>
-                );
-              })}
-              <div className="w-px h-8 bg-gray-200 mx-2" />
-              <button
-                onClick={() => { setShowOnlyFavorites(true); }}
-                className={`flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
-                  showOnlyFavorites
-                    ? 'bg-yellow-500 text-white shadow-md'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <Star size={16} className={showOnlyFavorites || favorites.length > 0 ? 'fill-current' : ''} />
-                <span>Favoriler</span>
-                {favorites.length > 0 && (
-                  <span className={`px-1.5 py-0.5 text-xs rounded-full ${
-                    showOnlyFavorites ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    {favorites.length}
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
+            <div className="flex items-center justify-between gap-4">
+              {/* Sol: Tümü ve Favoriler */}
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => { setShowOnlyFavorites(false); }}
+                  className={`flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
+                    !showOnlyFavorites
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <LayoutGrid size={16} />
+                  <span>Tümü</span>
+                </button>
+                <button
+                  onClick={() => { setShowOnlyFavorites(true); }}
+                  className={`flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${
+                    showOnlyFavorites
+                      ? 'bg-yellow-500 text-white shadow-md'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Star size={16} className={showOnlyFavorites || favorites.length > 0 ? 'fill-current' : ''} />
+                  <span>Favoriler</span>
+                  {favorites.length > 0 && (
+                    <span className={`px-1.5 py-0.5 text-xs rounded-full ${
+                      showOnlyFavorites ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      {favorites.length}
+                    </span>
+                  )}
+                </button>
+              </div>
 
-          {/* Search */}
-          <div className="mb-6">
-            <div className="relative max-w-md">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input
-                type="text"
-                placeholder="Altın, döviz veya kod ile ara..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              />
+              {/* Sağ: Arama */}
+              <div className="relative flex-1 max-w-xs">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                <input
+                  type="text"
+                  placeholder="Ürün ara..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2.5 bg-gray-100 border-0 rounded-lg text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                />
+              </div>
             </div>
           </div>
 
@@ -420,7 +389,7 @@ export default function Piyasalar() {
                   {showOnlyFavorites ? 'Henüz favori eklemediniz' : 'Sonuç bulunamadı'}
                 </p>
                 <button
-                  onClick={() => { setShowOnlyFavorites(false); setActiveCategory('all'); setSearch(''); }}
+                  onClick={() => { setShowOnlyFavorites(false); setSearch(''); }}
                   className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Tüm Fiyatlara Dön
