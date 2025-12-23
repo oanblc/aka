@@ -11,6 +11,7 @@ export default function Piyasalar() {
     logoBase64, logoHeight, logoWidth, faviconBase64, isLoaded: logoLoaded,
     contactPhone, contactEmail, socialWhatsapp
   } = useSettings();
+  const [prices, setPrices] = useState([]);
   const [search, setSearch] = useState('');
   const [mounted, setMounted] = useState(false);
   const [favorites, setFavorites] = useState([]);
@@ -24,8 +25,24 @@ export default function Piyasalar() {
   const [timeSinceUpdate, setTimeSinceUpdate] = useState('');
   const [lastUpdate, setLastUpdate] = useState(null);
 
-  // Custom fiyatları filtrele (panelden oluşturulan fiyatlar)
-  const prices = websocketPrices.filter(p => p.isCustom === true);
+  // WebSocket'ten gelen fiyatları güncelle - önceki fiyatları koru
+  useEffect(() => {
+    if (!websocketPrices || !Array.isArray(websocketPrices) || websocketPrices.length === 0) {
+      // Eğer websocket'ten veri gelmezse, önceki fiyatları koru
+      if (previousPricesRef.current.length > 0 && prices.length === 0) {
+        setPrices(previousPricesRef.current);
+      }
+      return;
+    }
+
+    // Custom fiyatları filtrele
+    const customPrices = websocketPrices.filter(p => p.isCustom === true);
+
+    if (customPrices.length > 0) {
+      setPrices(customPrices);
+      previousPricesRef.current = customPrices;
+    }
+  }, [websocketPrices]);
 
   // Kategoriler - Lucide ikonları ile
   const categories = [
@@ -98,8 +115,6 @@ export default function Piyasalar() {
         });
       }, 3000);
     }
-
-    previousPricesRef.current = prices;
   }, [prices]);
 
   // Son güncelleme zamanı
