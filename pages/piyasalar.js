@@ -168,18 +168,13 @@ export default function Piyasalar() {
     }).format(price);
   };
 
-  // Değişim yüzdesini hesapla
-  const calculateChange = (code) => {
-    const history = priceHistory[code];
-    if (!history || history.prices.length < 2) return null;
+  // Spread yüzdesini hesapla (Satış - Alış) / Alış * 100
+  const calculateSpread = (price) => {
+    if (!price || !price.calculatedAlis || !price.calculatedSatis) return null;
+    if (price.calculatedAlis === 0) return null;
 
-    const openPrice = history.prices[0];
-    const currentPrice = history.lastPrice;
-
-    if (!openPrice || openPrice === 0) return null;
-
-    const change = ((currentPrice - openPrice) / openPrice) * 100;
-    return change;
+    const spread = ((price.calculatedSatis - price.calculatedAlis) / price.calculatedAlis) * 100;
+    return spread;
   };
 
   const filteredPrices = prices
@@ -403,12 +398,7 @@ export default function Piyasalar() {
 
           {/* Price Table */}
           <div id="price-table-container" className="mb-8">
-            {prices.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-200">
-                <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mb-4" />
-                <p className="text-gray-500 text-sm">Fiyatlar yükleniyor...</p>
-              </div>
-            ) : filteredPrices.length === 0 ? (
+            {filteredPrices.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-200">
                 <Star size={48} className="text-gray-300 mb-4" />
                 <p className="text-gray-500 text-sm mb-4">
@@ -440,9 +430,9 @@ export default function Piyasalar() {
                     const change = priceChanges[price.code];
                     const isUp = change === 'up';
                     const isDown = change === 'down';
-                    const percentChange = calculateChange(price.code);
+                    const spreadPercent = calculateSpread(price);
                     const history = priceHistory[price.code];
-                    const trendUp = percentChange !== null ? percentChange >= 0 : null;
+                    const trendUp = spreadPercent !== null ? true : null;
 
                     return (
                       <div
@@ -496,15 +486,11 @@ export default function Piyasalar() {
                           </div>
                         </div>
 
-                        {/* Change Percentage - Desktop */}
+                        {/* Spread Percentage - Desktop */}
                         <div className="col-span-2 text-right hidden sm:block">
-                          {percentChange !== null ? (
-                            <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold ${
-                              percentChange >= 0
-                                ? 'bg-green-100 text-green-700'
-                                : 'bg-red-100 text-red-700'
-                            }`}>
-                              {percentChange >= 0 ? '+' : ''}{percentChange.toFixed(2)}%
+                          {spreadPercent !== null ? (
+                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700">
+                              %{spreadPercent.toFixed(2)}
                             </span>
                           ) : (
                             <span className="text-xs text-gray-400">-</span>
